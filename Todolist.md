@@ -29,6 +29,7 @@
 | 2026-09-29 10:20 | 任务 0.4：数据层 | services/api 建立 Prisma 数据模型（8 张表 + machine_fields/deleted_at 补充列，JSON 字段一律 TEXT + utf8mb4 + DATETIME(3) + 计划 §5.1 全部索引）、init 迁移、种子脚本（超级管理员 bcrypt 哈希 + page_contents 5 配置项默认值，幂等）；npm 脚本审批策略阻断 postinstall → 手动 prisma generate；pingyang 用户授权 shadow db 后迁移成功；验收通过：8 表建成、种子后 admin_users=1 / page_contents=5、TEXT 列与复合索引逐项核对无误 |
 | 2026-09-29 10:28 | 任务 1.1：后端骨架 | NestJS 12 骨架：多环境配置（dev.local/prod 双 env 解析 + 生产强制 SESSION_SECRET）、统一响应 {code,message,data}（拦截器 + 异常过滤器，未知异常不泄漏细节）、winston 按日滚动日志（30 天）+ 独立 audit 通道、脱敏工具（测试发现手机号正则位数与 token 半遮两处缺陷已修复复验）；验收通过：health 返回统一结构、404 收敛 40400、audit 日志落盘且电话/邮箱/密码/Token 全部脱敏；npm audit 3 高危为 Prisma CLI 传递依赖（deepmerge-ts，仅开发期 CLI 面，上游未修，跟踪中） |
 | 2026-09-29 10:35 | 任务 1.2：认证与会话 | 手机号+密码登录（bcryptjs 加盐比对，账号不存在亦执行 dummy 比对减小时序差异）、Redis 服务端会话（express-session + connect-redis v10，8 小时过期，HttpOnly + SameSite=Lax + 生产 Secure，登录重建会话防固定）、连续失败 5 次锁定 15 分钟并提示剩余时间、退出销毁会话、登录/退出 audit 留痕；登录/会话/退出/锁定 6 连测全部符合 PRD §7.0；期间发现 connect-redis v10 仅兼容 node-redis（弃 ioredis 换 redis v5，重写客户端与键操作 API） |
+| 2026-09-29 10:50 | 任务 1.3：存储适配层 | 按第一章确认机制获负责人批准新增依赖 sharp 0.35.5（本地缩略图）+ ali-oss 6.23.0（OSS 官方 SDK）；StorageDriver 统一接口 + LocalDriver（落盘 services/api/uploads + sharp 400px 缩略图 + /uploads 静态服务）/ OssDriver（直传桶 + x-oss-process 按需裁剪缩略图 + CDN 域名优先）；上传校验：扩展名+MIME 白名单、图片 ≤5MB / 视频 ≤2GB（PRD §5.3）、魔数嗅探防伪造、scope 白名单防路径穿越、任一失败清理暂存零残留；验收通过：未登录 401 / 正常上传返回 url+thumbnailUrl / 伪造文件与错误扩展名与超限（413→40000 中文话术）与未知 scope 全部拒绝 / 缩略图 400px 静态可访问 / audit 留痕 / STORAGE_DRIVER=oss 无凭证拒绝启动、有凭证正常切换（同接口仅环境变量变化，异常不泄漏细节） |
 
 ## 待办（后续）
 
