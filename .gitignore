@@ -6,10 +6,13 @@ out/
 build/
 coverage/
 
-# 环境变量与密钥（模板以 .env*.example 形式提交）
+# 环境变量与密钥（模板以 *.env.example 形式提交）
 .env
 .env.*
 !.env*.example
+# config/ 下真实环境文件（仅模板入库，值不入库）
+config/dev.local.env
+config/prod.env
 
 # 日志
 *.log
