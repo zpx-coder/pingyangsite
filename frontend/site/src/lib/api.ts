@@ -122,3 +122,42 @@ export interface PublicNews {
   publishTime: string;
   isTop: boolean;
 }
+
+/** 分页响应（官网公开列表统一形状 {page,pageSize,total,list}） */
+export interface Paged<T> {
+  page: number;
+  pageSize: number;
+  total: number;
+  list: T[];
+}
+
+/** 官网产品卡片（类目页产品列表项） */
+export interface PublicProductCard {
+  id: number;
+  nameZh: string;
+  nameEn: string;
+  mainImage: string | null;
+  priceRef: string | null;
+  moq: string | null;
+  company: { id: number; nameZh: string } | null;
+}
+
+/** 官网企业（类目页企业列表项 / 企业详情；honorImages 为 JSON 数组解析结果） */
+export interface PublicCompany {
+  id: number;
+  nameZh: string;
+  nameEn: string;
+  logoUrl: string | null;
+  coverUrl: string | null;
+  foundedYear: number | null;
+  scale: string | null;
+  address: string | null;
+  contactName: string | null;
+  phone: string | null;
+  email: string | null;
+  website: string | null;
+  introZh: string | null;
+  introEn: string | null;
+  honorImages: string[];
+  categories: { id: number; nameZh: string; nameEn: string }[];
+}
