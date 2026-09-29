@@ -59,7 +59,8 @@ export class ProductService {
 
   async create(dto: CreateProductDto) {
     await this.assertCategoryUsable(dto.categoryId);
-    if (dto.companyId !== undefined) {
+    // 企业关联选填：null/undefined 均跳过校验（null 落库为不关联），与 update 语义一致
+    if (dto.companyId != null) {
       await this.assertCompanyExists(dto.companyId);
     }
     const data = await this.buildData(
@@ -97,7 +98,7 @@ export class ProductService {
     if (dto.categoryId !== undefined) {
       await this.assertCategoryUsable(dto.categoryId);
     }
-    if (dto.companyId) {
+    if (dto.companyId != null) {
       await this.assertCompanyExists(dto.companyId);
     }
     // 仅对实际改动过的双语字段做联动（同企业/类目：未触碰字段保留原值与原标记，

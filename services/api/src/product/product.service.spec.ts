@@ -156,6 +156,32 @@ describe('ProductService.create', () => {
     });
   });
 
+  it('companyId 显式传 null → 不校验企业、落库 null（与 update 语义一致）', async () => {
+    const { service, prisma } = makeService();
+    (prisma.category.findFirst as jest.Mock).mockResolvedValue({ id: 10, status: 1 });
+    (prisma.product.findFirst as jest.Mock).mockResolvedValue({ ...PRODUCT_ROW, id: 7 });
+    await service.create({
+      nameZh: '产品',
+      categoryId: 10,
+      mainImage: '/m.png',
+      detailZh: '详情',
+      companyId: null,
+    } as never);
+    expect(prisma.company.findFirst).not.toHaveBeenCalled();
+    expect(prisma.product.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ companyId: null }),
+    });
+  });
+
+  it('companyId 传 0 → 校验企业并拒绝（仅绕过 DTO 直连服务可触发）', async () => {
+    const { service, prisma } = makeService();
+    (prisma.category.findFirst as jest.Mock).mockResolvedValue({ id: 10, status: 1 });
+    await expect(
+      service.create({ ...dto, companyId: 0 }),
+    ).rejects.toThrow(new BadRequestException('关联企业不存在'));
+    expect(prisma.company.findFirst).toHaveBeenCalled();
+  });
+
   it('所属类目不存在 → 400', async () => {
     const { service } = makeService();
     await expect(service.create(dto)).rejects.toThrow(
@@ -236,6 +262,15 @@ describe('ProductService.update', () => {
     const { service, prisma } = makeService();
     (prisma.product.findFirst as jest.Mock).mockResolvedValue(PRODUCT_ROW);
     await expect(service.update(1, { companyId: 30 })).rejects.toThrow('关联企业不存在');
+  });
+
+  it('companyId 传 0 → 校验企业并拒绝（不再跳过校验）', async () => {
+    const { service, prisma } = makeService();
+    (prisma.product.findFirst as jest.Mock).mockResolvedValue(PRODUCT_ROW);
+    await expect(service.update(1, { companyId: 0 })).rejects.toThrow(
+      new BadRequestException('关联企业不存在'),
+    );
+    expect(prisma.company.findFirst).toHaveBeenCalled();
   });
 
   it('切换类目不存在/下架 → 400', async () => {
