@@ -87,9 +87,17 @@ export interface ContactInfoConfig {
   mapCoordinate?: string | null;
 }
 
+export interface AboutPageConfig {
+  bannerImage?: string | null;
+  videoUrl?: string | null;
+  contentZh?: string | null;
+  contentEn?: string | null;
+}
+
 export interface PageContentMap {
   home_banner?: HomeBannerConfig;
   home_about?: HomeAboutConfig;
+  about_page?: AboutPageConfig;
   contact_info?: ContactInfoConfig;
   [key: string]: unknown;
 }

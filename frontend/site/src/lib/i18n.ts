@@ -65,6 +65,22 @@ export const dict = {
         cta: '查看完整联系方式',
       },
     },
+    about: {
+      videoKicker: '影像平阳',
+      videoTitle: '平阳产业带宣传片',
+      videoCaption: '山海之城 · 制造之都 —— 认识平阳，从这里开始',
+      locKicker: '区位优势',
+      locTitle: '浙江东南沿海 · 温州南部副中心',
+      locBody:
+        '平阳县位于浙江省东南沿海，隶属温州市，陆地面积约 1051 平方公里，常住人口约 90 万。县境依山面海，海岸线绵长，距温州龙湾国际机场约 40 分钟车程，甬台温高速、温福铁路穿境而过，交通区位优越。',
+      locStats: [
+        { value: '5', label: '高速互通' },
+        { value: '2', label: '铁路站点' },
+        { value: '1', label: '深水港区' },
+      ],
+      overviewKicker: '产业概况',
+      overviewTitle: '六大特色产业集群',
+    },
   },
   en: {
     topbarTag: 'Connecting the World · Serving Buyers',
@@ -123,6 +139,22 @@ export const dict = {
         sub: 'For sourcing cooperation, please send an inquiry from the product detail page; we will contact you within 1–2 business days',
         cta: 'View Full Contact Info',
       },
+    },
+    about: {
+      videoKicker: 'PINGYANG IN MOTION',
+      videoTitle: 'Pingyang Industrial Belt Promo',
+      videoCaption: 'City by the sea · A manufacturing powerhouse — get to know Pingyang',
+      locKicker: 'LOCATION',
+      locTitle: 'Southeast Zhejiang Coast · Southern Hub of Wenzhou',
+      locBody:
+        'Pingyang County is located on the southeast coast of Zhejiang Province, under the jurisdiction of Wenzhou. It covers about 1,051 km² of land with a resident population of around 0.9 million. Bordered by mountains and sea with a long coastline, it is about 40 minutes by car from Wenzhou Longwan International Airport, with the Yong-Tai-Wen Expressway and the Wenzhou-Fuzhou Railway passing through.',
+      locStats: [
+        { value: '5', label: 'Expressway Interchanges' },
+        { value: '2', label: 'Railway Stations' },
+        { value: '1', label: 'Deep-water Ports' },
+      ],
+      overviewKicker: 'INDUSTRY OVERVIEW',
+      overviewTitle: 'Six Featured Industry Clusters',
     },
   },
 } as const satisfies Record<Lang, unknown>;
