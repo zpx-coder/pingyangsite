@@ -152,6 +152,16 @@ export const dict = {
       productsTitle: '该企业产品',
       noProducts: '该企业暂无产品，敬请期待',
     },
+    news: {
+      banner: '新闻动态',
+      topTag: '置顶',
+      publishedAt: '发布时间',
+      backToList: '返回列表',
+      prevNews: '上一篇',
+      nextNews: '下一篇',
+      noNews: '暂无新闻动态，敬请期待',
+      loadError: '新闻加载失败，请稍后重试',
+    },
   },
   en: {
     topbarTag: 'Connecting the World · Serving Buyers',
@@ -297,6 +307,16 @@ export const dict = {
       productsKicker: 'PRODUCTS',
       productsTitle: 'Products of This Company',
       noProducts: 'No products from this company yet',
+    },
+    news: {
+      banner: 'News',
+      topTag: 'Top',
+      publishedAt: 'Published',
+      backToList: 'Back to List',
+      prevNews: 'Previous',
+      nextNews: 'Next',
+      noNews: 'No news yet, stay tuned',
+      loadError: 'Failed to load news, please try again later',
     },
   },
 } as const satisfies Record<Lang, unknown>;

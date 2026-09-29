@@ -1542,3 +1542,29 @@ a {
 .co-facts .v a:hover{color:var(--gold-d)}
 .honor-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .honor-grid img{width:100%;height:180px;object-fit:contain;background:var(--warm);border:1px solid var(--line);border-radius:6px;padding:10px}
+
+/* ================= 新闻列表/详情（任务 2.8，PRD §6.6/6.7） ================= */
+/* 置顶大卡（ui.html news-feat 视觉值移植） */
+.news-feat{display:grid;grid-template-columns:1.1fr 1fr;background:#fff;border-radius:6px;overflow:hidden;box-shadow:var(--shadow);transition:.3s}
+.news-feat:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg)}
+.news-feat .im{height:300px;overflow:hidden}
+.news-feat .im img{width:100%;height:100%;object-fit:cover;transition:.6s}
+.news-feat:hover .im img{transform:scale(1.07)}
+.news-feat .bd{padding:32px 34px;display:flex;flex-direction:column;justify-content:center}
+.news-feat .bd .date{color:var(--gold-d);font-size:13px;letter-spacing:2px;display:flex;align-items:center;gap:10px}
+.news-feat .bd h3{font-family:var(--serif);font-size:22px;color:var(--ink);margin:10px 0 12px;line-height:1.5}
+.news-feat .bd p{color:var(--muted);font-size:14px}
+.badge-top{background:var(--deep);color:var(--gold-2);font-size:11.5px;padding:2px 10px;border-radius:2px;letter-spacing:2px}
+.news-list2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-top:34px}
+/* 详情页（ui.html article-head / article-body 视觉值移植） */
+.article-head{text-align:center;padding:10px 0 26px}
+.article-head h1{font-family:var(--serif);font-size:30px;color:var(--ink);letter-spacing:2px}
+.article-head .meta{color:var(--muted);font-size:13px;margin-top:14px;letter-spacing:1px}
+.article-head .meta b{color:var(--tea);font-weight:600}
+.article-body{background:#fff;border-radius:6px;box-shadow:var(--shadow);padding:44px 54px}
+/* 上一篇/下一篇切换栏 */
+.news-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:36px;padding:18px 22px;background:#fff;border-radius:6px;box-shadow:var(--shadow)}
+.news-nav .nv{display:flex;align-items:center;gap:6px;color:var(--deep);text-decoration:none;font-size:14px;transition:.25s;flex:1}
+.news-nav .nv:hover{color:var(--gold-d)}
+.news-nav .nv:last-child{justify-content:flex-end}
+.news-nav .nv.dis{color:var(--line);cursor:default}

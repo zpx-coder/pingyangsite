@@ -199,3 +199,19 @@ export interface PublicCompanyProduct {
 
 /** 官网企业详情 = 企业公开视图 + 分页产品列表 */
 export type PublicCompanyDetail = PublicCompany & { products: Paged<PublicCompanyProduct> };
+
+/** 官网新闻详情（PRD §6.7；未发布/未到时间/已删除 404；prev/next 为列表序邻位仅含 id 与双语标题） */
+export interface PublicNewsDetail {
+  id: number;
+  titleZh: string;
+  titleEn: string;
+  summaryZh: string | null;
+  summaryEn: string | null;
+  contentZh: string;
+  contentEn: string;
+  coverUrl: string | null;
+  publishTime: string;
+  isTop: boolean;
+  prev: { id: number; titleZh: string; titleEn: string } | null;
+  next: { id: number; titleZh: string; titleEn: string } | null;
+}
