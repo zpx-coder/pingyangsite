@@ -127,8 +127,9 @@ model News {
   summaryEn   String?   @map("summary_en") @db.VarChar(500)
   contentZh   String?   @map("content_zh") @db.Text // 富文本
   contentEn   String?   @map("content_en") @db.Text
-  publishTime DateTime? @map("publish_time") // 定时发布（计划任务 1.8）
-  isTop       Boolean   @default(false) @map("is_top")
+  publishTime   DateTime? @map("publish_time") // 定时发布（计划任务 1.8）
+  machineFields String?   @map("machine_fields") @db.Text // 机器翻译字段标记（JSON 序列化，方案 §5.3）
+  isTop         Boolean   @default(false) @map("is_top")
   status      Int       @default(0) // 0 草稿 / 1 已发布
   deletedAt   DateTime? @map("deleted_at") // 逻辑删除（PRD §7.4.1）
   createdAt   DateTime  @default(now()) @map("created_at")
