@@ -94,11 +94,19 @@ export interface AboutPageConfig {
   contentEn?: string | null;
 }
 
+/** 页脚信息（后台页面内容-页脚信息；备案号上线前由后台填入真实值） */
+export interface FooterInfoConfig {
+  icp?: string | null;
+  copyrightZh?: string | null;
+  copyrightEn?: string | null;
+}
+
 export interface PageContentMap {
   home_banner?: HomeBannerConfig;
   home_about?: HomeAboutConfig;
   about_page?: AboutPageConfig;
   contact_info?: ContactInfoConfig;
+  footer_info?: FooterInfoConfig;
   [key: string]: unknown;
 }
 
