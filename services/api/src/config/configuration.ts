@@ -32,6 +32,11 @@ export interface OssConfig {
   cdnDomain?: string;
 }
 
+export interface AliyunMtConfig {
+  accessKeyId: string;
+  accessKeySecret: string;
+}
+
 export interface AppConfig {
   env: string;
   port: number;
@@ -43,6 +48,10 @@ export interface AppConfig {
     oss: OssConfig;
   };
   mtMode: MtMode;
+  mt: {
+    mode: MtMode;
+    aliyun: AliyunMtConfig;
+  };
   redis: { host: string; port: number };
 }
 
@@ -69,6 +78,14 @@ export default (): AppConfig => {
     }
   }
 
+  const mtMode: MtMode = (process.env.MT_MODE as MtMode | undefined) ?? (isProd ? 'real' : 'mock');
+  if (mtMode === 'real') {
+    const missing = ['ALIYUN_MT_ACCESS_KEY_ID', 'ALIYUN_MT_ACCESS_KEY_SECRET'].filter((key) => !process.env[key]);
+    if (missing.length > 0) {
+      throw new Error(`[config] MT_MODE=real 必须注入 ${missing.join('、')}（config/prod.env）`);
+    }
+  }
+
   return {
     env,
     port,
@@ -92,7 +109,14 @@ export default (): AppConfig => {
         cdnDomain: process.env.OSS_CDN_DOMAIN || undefined,
       },
     },
-    mtMode: (process.env.MT_MODE as MtMode | undefined) ?? (isProd ? 'real' : 'mock'),
+    mtMode,
+    mt: {
+      mode: mtMode,
+      aliyun: {
+        accessKeyId: process.env.ALIYUN_MT_ACCESS_KEY_ID ?? '',
+        accessKeySecret: process.env.ALIYUN_MT_ACCESS_KEY_SECRET ?? '',
+      },
+    },
     redis: {
       host: process.env.REDIS_HOST ?? '127.0.0.1',
       port: Number(process.env.REDIS_PORT ?? 6379),
