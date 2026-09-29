@@ -41,7 +41,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
         message = PAYLOAD_TOO_LARGE_MESSAGE;
         code = STATUS_CODE_MAP[status] ?? ResultCode.INTERNAL_ERROR;
       } else if (typeof body === 'string') {
+        // 纯字符串消息体（new HttpException(msg, status) 形式）：按状态码映射业务码，
+        // 否则会错误地保留 50000（如 429 限流提示，2026-09-29 询盘限流验收发现）
         message = body;
+        code = STATUS_CODE_MAP[status] ?? ResultCode.INTERNAL_ERROR;
       } else if (typeof body === 'object' && body !== null) {
         const rawMessage = (body as { message?: string | string[] }).message;
         message = Array.isArray(rawMessage) ? rawMessage.join('；') : (rawMessage ?? message);
