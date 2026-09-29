@@ -9,6 +9,7 @@ import { StorageModule } from './storage/storage.module';
 import { AuthModule } from './auth/auth.module';
 import { UploadModule } from './upload/upload.module';
 import { TranslationModule } from './translation/translation.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { TranslationModule } from './translation/translation.module';
     AuthModule,
     UploadModule,
     TranslationModule,
+    CategoryModule,
   ],
 })
 export class AppModule {}
