@@ -1,0 +1,55 @@
+# 本地开发基础设施：MySQL 5.6.16 / Redis 7.0.15（与生产同版本）
+# 使用：./scripts/dev-up.sh（自动生成 env 并起服务） / ./scripts/dev-down.sh
+# 变量来源：config/dev.local.env（模板见 config/dev.local.env.example）
+
+name: ${COMPOSE_PROJECT_NAME:-pingyangsite}
+
+services:
+  mysql:
+    # 版本说明（ADR-0002）：Docker Hub 无 mysql:5.6.16 标签，
+    # 采用 5.6 系列最终版 5.6.51 —— 同系列兼容面一致（utf8mb4、
+    # DATETIME(3) 均支持），且含全系安全补丁；生产仍为 5.6.16。
+    image: mysql:5.6.51
+    container_name: pingyangsite-mysql
+    # MySQL 5.6.16 适配约定（开发计划方案 §5.1）：显式 utf8mb4，
+    # 5.6 默认字符集非 utf8mb4；建库亦见 docker/mysql/init/01-charset.sql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123456}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-pingyangsite}
+      MYSQL_USER: ${MYSQL_USER:-pingyang}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-pingyang123456}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # MYSQL_PWD 环境变量方式传口令，避免命令行明文（安全底线：日志/进程列表不暴露口令）
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$${MYSQL_ROOT_PASSWORD}\" mysqladmin ping -h127.0.0.1 -uroot --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 36
+      start_period: 30s
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.0.15
+    container_name: pingyangsite-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+  redis-data:
