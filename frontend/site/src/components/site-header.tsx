@@ -6,8 +6,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LanguageSwitcher from './language-switcher';
 import { dict, type Lang } from '@/lib/i18n';
+import { pickLang, type PublicCategory } from '@/lib/api';
 
-export default function SiteHeader({ lang }: { lang: Lang }) {
+export default function SiteHeader({ lang, categories = [] }: { lang: Lang; categories?: PublicCategory[] }) {
   const pathname = usePathname();
   const t = dict[lang];
 
@@ -80,13 +81,25 @@ export default function SiteHeader({ lang }: { lang: Lang }) {
                   {item.label}
                 </a>
                 <div className="drop-panel">
-                  <Link href={`${base}/categories`}>
-                    <i>◆</i>
-                    <div>
-                      <b>{item.label}</b>
-                      <span>{lang === 'zh-CN' ? '查看全部上架类目' : 'View all industries'}</span>
-                    </div>
-                  </Link>
+                  {categories.length > 0 ? (
+                    categories.slice(0, 8).map((category, i) => (
+                      <Link key={category.id} href={`${base}/categories/${category.id}`}>
+                        <i>{String(i + 1).padStart(2, '0')}</i>
+                        <div>
+                          <b>{pickLang(lang, category.nameZh, category.nameEn)}</b>
+                          <span>{category.nameEn}</span>
+                        </div>
+                      </Link>
+                    ))
+                  ) : (
+                    <Link href={`${base}/categories`}>
+                      <i>◆</i>
+                      <div>
+                        <b>{item.label}</b>
+                        <span>{lang === 'zh-CN' ? '查看全部上架类目' : 'View all industries'}</span>
+                      </div>
+                    </Link>
+                  )}
                 </div>
               </div>
             ) : (

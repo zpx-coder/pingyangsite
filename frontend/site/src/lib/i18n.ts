@@ -26,6 +26,45 @@ export const dict = {
     },
     notFound: { title: '页面不存在', back: '返回首页' },
     placeholder: '页面建设中，敬请期待',
+    home: {
+      heroKicker: 'PINGYANG · ZHEJIANG · CHINA',
+      heroExplore: '探索特色产业',
+      stats: [
+        { end: 6, suffix: '', label: '特色产业集群' },
+        { end: 3000, suffix: '+', label: '制造企业' },
+        { end: 80, suffix: '+', label: '出口国家地区' },
+        { end: 200, suffix: '亿+', label: '塑编产业年产值' },
+      ],
+      tickerPrefix: '平阳特色产业集群',
+      secCat: {
+        kicker: '特色产业',
+        title: '平阳特色产业类目',
+        desc: '六大特色产业集群 · 点击卡片查看该类目下的优势产品与优质企业',
+        more: '进入产业类目',
+      },
+      secAbout: {
+        kicker: 'ABOUT PINGYANG',
+        fallbackTitle: '关于平阳 · 山海之城',
+        more: '了解更多',
+        mini: [
+          { value: '1051', unit: 'km²', label: '陆域面积' },
+          { value: '90', unit: '万', label: '常住人口' },
+          { value: '40', unit: 'min', label: '距机场车程' },
+        ],
+      },
+      secNews: {
+        kicker: '新闻热点',
+        title: '平阳产业带动态',
+        desc: '产业要闻 · 展会动态 · 政策速递',
+        more: '更多新闻',
+      },
+      contactBand: {
+        title: '欢迎来到',
+        titleAccent: '平阳产业带',
+        sub: '如需采购合作，请在产品详情页发送询盘，我们将在 1–2 个工作日内与您联系',
+        cta: '查看完整联系方式',
+      },
+    },
   },
   en: {
     topbarTag: 'Connecting the World · Serving Buyers',
@@ -46,7 +85,57 @@ export const dict = {
     },
     notFound: { title: 'Page Not Found', back: 'Back to Home' },
     placeholder: 'This page is under construction',
+    home: {
+      heroKicker: 'PINGYANG · ZHEJIANG · CHINA',
+      heroExplore: 'Explore Industries',
+      stats: [
+        { end: 6, suffix: '', label: 'Featured Industry Clusters' },
+        { end: 3000, suffix: '+', label: 'Manufacturing Enterprises' },
+        { end: 80, suffix: '+', label: 'Export Countries & Regions' },
+        { end: 20, suffix: 'B+', label: 'Annual Woven Packaging Output' },
+      ],
+      tickerPrefix: 'Pingyang Featured Industries',
+      secCat: {
+        kicker: 'INDUSTRIES',
+        title: 'Featured Industry Categories',
+        desc: 'Six featured industry clusters · click a card to explore products and enterprises',
+        more: 'Explore Category',
+      },
+      secAbout: {
+        kicker: 'ABOUT PINGYANG',
+        fallbackTitle: 'About Pingyang · City by the Sea',
+        more: 'Learn More',
+        mini: [
+          { value: '1051', unit: 'km²', label: 'Land Area' },
+          { value: '0.9', unit: 'M', label: 'Residents' },
+          { value: '40', unit: 'min', label: 'To Airport' },
+        ],
+      },
+      secNews: {
+        kicker: 'NEWS',
+        title: 'Pingyang Industry News',
+        desc: 'Industry Updates · Exhibitions · Policies',
+        more: 'More News',
+      },
+      contactBand: {
+        title: 'Welcome to',
+        titleAccent: 'Pingyang Industrial Belt',
+        sub: 'For sourcing cooperation, please send an inquiry from the product detail page; we will contact you within 1–2 business days',
+        cta: 'View Full Contact Info',
+      },
+    },
   },
 } as const satisfies Record<Lang, unknown>;
 
-export type Dict = (typeof dict)['zh-CN'];
+/** 文案字典结构（字面量拓宽为宽类型，zh-CN 与 en 两种语言实例均可赋值） */
+type Widen<T> = T extends string
+  ? string
+  : T extends number
+    ? number
+    : T extends boolean
+      ? boolean
+      : T extends readonly (infer U)[]
+        ? readonly Widen<U>[]
+        : { -readonly [K in keyof T]: Widen<T[K]> };
+
+export type Dict = Widen<(typeof dict)['zh-CN']>;

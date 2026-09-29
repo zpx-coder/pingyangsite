@@ -1,8 +1,10 @@
 // 官网语言段布局（PRD §5.1 全局框架）：顶栏 + 头部导航 + 内容 + 页脚
+// 导航「特色产业」下拉展示上架类目（PRD §6.1 关键规则），接口不可用时降级为占位链接。
 import { notFound } from 'next/navigation';
 import SiteHeader from '@/components/site-header';
 import SiteFooter from '@/components/site-footer';
 import { isLang, type Lang } from '@/lib/i18n';
+import { getApi, type PublicCategory } from '@/lib/api';
 
 export default async function LangLayout({
   children,
@@ -17,9 +19,11 @@ export default async function LangLayout({
   }
   const lang: Lang = raw;
 
+  const categories = await getApi<PublicCategory[]>('/api/v1/public/categories').catch(() => null);
+
   return (
     <>
-      <SiteHeader lang={lang} />
+      <SiteHeader lang={lang} categories={categories ?? []} />
       <main>{children}</main>
       <SiteFooter lang={lang} />
     </>
