@@ -1,0 +1,28 @@
+# 依赖与构建产物
+node_modules/
+dist/
+.next/
+out/
+build/
+coverage/
+
+# 环境变量与密钥（模板以 .env*.example 形式提交）
+.env
+.env.*
+!.env*.example
+
+# 日志
+*.log
+logs/
+
+# 系统与 IDE 文件
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# 测试与临时产物
+test-results/
+playwright-report/
+*.tsbuildinfo
