@@ -5,7 +5,9 @@ import { HealthModule } from './health/health.module';
 import { LoggerModule } from './logger/logger.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './redis/redis.module';
+import { StorageModule } from './storage/storage.module';
 import { AuthModule } from './auth/auth.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -18,8 +20,10 @@ import { AuthModule } from './auth/auth.module';
     LoggerModule,
     PrismaModule,
     RedisModule,
+    StorageModule,
     HealthModule,
     AuthModule,
+    UploadModule,
   ],
 })
 export class AppModule {}

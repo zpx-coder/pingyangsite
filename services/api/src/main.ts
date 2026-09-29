@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import session from 'express-session';
 import { RedisStore } from 'connect-redis';
 import { AppModule } from './app.module';
@@ -13,7 +14,7 @@ import { REDIS_CLIENT } from './redis/redis.module';
 import { SESSION_COOKIE_NAME, SESSION_MAX_AGE_MS } from './auth/auth.constants';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true });
 
   const logger = app.get(AppLoggerService);
   app.useLogger(logger);
@@ -22,6 +23,11 @@ async function bootstrap(): Promise<void> {
   app.enableCors();
 
   const config = app.get(ConfigService);
+
+  // 本地存储驱动：uploads 目录以 /uploads 前缀静态服务（OSS 模式由 CDN 分发，无需本地静态）
+  if (config.get('storage.driver', 'local') === 'local') {
+    app.useStaticAssets(config.getOrThrow<string>('storage.local.dir'), { prefix: '/uploads/' });
+  }
 
   // 服务端会话（Redis 存储，PRD §7.0 / 计划 §5.2）：
   // HttpOnly + SameSite=Lax；生产强制 Secure（TLS 1.2+）；8 小时过期

@@ -12,9 +12,13 @@ const STATUS_CODE_MAP: Record<number, number> = {
   [HttpStatus.FORBIDDEN]: ResultCode.FORBIDDEN,
   [HttpStatus.NOT_FOUND]: ResultCode.NOT_FOUND,
   [HttpStatus.TOO_MANY_REQUESTS]: ResultCode.TOO_MANY_REQUESTS,
+  // multer LIMIT_FILE_SIZE（上传超限）
+  [HttpStatus.PAYLOAD_TOO_LARGE]: ResultCode.BAD_REQUEST,
 };
 
 const GENERIC_ERROR_MESSAGE = '服务器开小差了，请稍后重试';
+// 413 统一话术（multer 大小超限时 HttpException 消息为英文模板，此处覆盖为中文提示）
+const PAYLOAD_TOO_LARGE_MESSAGE = '文件大小超出限制';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -32,7 +36,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const body = exception.getResponse();
-      if (typeof body === 'string') {
+      if (status === HttpStatus.PAYLOAD_TOO_LARGE) {
+        // multer 大小超限：Nest 抛出的消息为英文模板，统一覆盖为中文提示
+        message = PAYLOAD_TOO_LARGE_MESSAGE;
+        code = STATUS_CODE_MAP[status] ?? ResultCode.INTERNAL_ERROR;
+      } else if (typeof body === 'string') {
         message = body;
       } else if (typeof body === 'object' && body !== null) {
         const rawMessage = (body as { message?: string | string[] }).message;

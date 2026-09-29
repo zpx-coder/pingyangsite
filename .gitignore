@@ -18,6 +18,9 @@ config/prod.env
 *.log
 logs/
 
+# 本地上传文件（STORAGE_DRIVER=local 时落 services/api/uploads）
+services/api/uploads/
+
 # 系统与 IDE 文件
 .DS_Store
 Thumbs.db
