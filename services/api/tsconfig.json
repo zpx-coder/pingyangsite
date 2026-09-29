@@ -10,8 +10,13 @@
     "noUnusedLocals": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false,
+    "incremental": true,
     "outDir": "dist",
+    "rootDir": "src",
     "sourceMap": true
   },
-  "include": ["prisma", "src"]
+  "include": ["src"]
 }
