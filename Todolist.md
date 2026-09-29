@@ -25,6 +25,8 @@
 | 2026-09-28 12:10 | 第 13 章全部确认，方案具备执行条件 | B1 设计稿 v2.0 定稿；B3 使用负责人现有已备案域名（不新购域名、不新办备案）；C3 云预算确认；D1 取消审计表——方案升 v2.2：数据模型回到 PRD 8 表、任务 1.1/1.11 审计中间件改为应用日志留痕、§9/§10/§11/§12 备案与审计表述同步、§13 全部勾选；PRD 升 v1.4（§9.2 审计→应用日志留痕）；浏览设计稿.html 待确认 ①–④ 转已确认；待办更新（设计稿确认完成、ICP 备案无需新办） |
 | 2026-09-29 08:30 | 阶段 0.1/0.2 启动：Git 仓库初始化 | A6 落实 GitHub 远程仓库（https://github.com/zpx-coder/pingyangsite.git，空仓库可访问）——方案 §13 A6/§12/§3.2 同步；本目录 git init（main 分支），建立 .gitignore/.editorconfig/README 与 §3.2 目录骨架，文档迁移至 docs/prd（PRD/方案/原型/产品描述）与 docs/design（设计稿），新增 ADR-0001 技术选型决策记录；环境检查：Node v24.18.0/npm 11.16.0 ✓、Docker CLI 29.5.3 已装但守护进程未启动（任务 0.3 前启动）、git 2.39.5 ✓ |
 | 2026-09-29 09:16 | 阶段 0.1/0.2 完成：仓库初始化并首次推送 | 上轮会话因上下文超限中断（无命令失败、无数据丢失），本轮续做：文档迁移就位（docs/prd 4 文件 + docs/design 6 项）；提交 c1 chore(repo) 13 文件、c2 docs 46 文件；建 develop 分支；HTTPS 推送无凭据报错 → 远程改用 SSH（zpx-coder 密钥已注册）推送 main/develop 成功；.env 忽略规则验证通过 |
+| 2026-09-29 09:40 | 任务 0.3：本地基础设施 | docker-compose.yml（MySQL 5.6.51/Redis 7.0.15）+ scripts/dev-up.sh/dev-down.sh + docker/mysql/init 建库脚本（显式 utf8mb4）；实测 Docker Hub 无 mysql:5.6.16 标签 → 采用 5.6 系列最终版 5.6.51（ADR-0002 记录，兼容面一致）；验收通过：一键起库成功（MySQL 5.6.51 utf8mb4 库 pingyangsite + Redis 7.0.15）、启停循环验证数据卷保留；期间修复 config/dev.local.env 误入库（补 .gitignore 规则并移出版本控制） |
+| 2026-09-29 10:20 | 任务 0.4：数据层 | services/api 建立 Prisma 数据模型（8 张表 + machine_fields/deleted_at 补充列，JSON 字段一律 TEXT + utf8mb4 + DATETIME(3) + 计划 §5.1 全部索引）、init 迁移、种子脚本（超级管理员 bcrypt 哈希 + page_contents 5 配置项默认值，幂等）；npm 脚本审批策略阻断 postinstall → 手动 prisma generate；pingyang 用户授权 shadow db 后迁移成功；验收通过：8 表建成、种子后 admin_users=1 / page_contents=5、TEXT 列与复合索引逐项核对无误 |
 
 ## 待办（后续）
 
