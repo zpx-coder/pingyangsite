@@ -12,6 +12,7 @@ export const dict = {
     hotlineLabel: '全国服务热线',
     // 页头热线回退值（contact_info.phone 配置缺失时展示；与页脚同一数据源）
     hotline: '0577-6372 8888',
+    logoAlt: '平阳 logo',
     contactCta: '联系我们',
     nav: { home: '首页', about: '平阳介绍', categories: '特色产业', news: '新闻动态', contact: '联系我们' },
     footer: {
@@ -152,7 +153,7 @@ export const dict = {
       email: '邮箱',
       website: '官网',
       aboutKicker: '企业介绍',
-      aboutTitle: '关于我们',
+      aboutTitle: '企业简介',
       honorKicker: '资质认证',
       honorTitle: '荣誉资质',
       productsKicker: '在售产品',
@@ -194,6 +195,7 @@ export const dict = {
     topbarTag: 'Connecting the World · Serving Buyers',
     hotlineLabel: 'Service Hotline',
     hotline: '0577-6372 8888',
+    logoAlt: 'Pingyang logo',
     contactCta: 'Contact Us',
     nav: { home: 'Home', about: 'About Pingyang', categories: 'Industries', news: 'News', contact: 'Contact' },
     footer: {

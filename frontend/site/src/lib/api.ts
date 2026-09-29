@@ -153,7 +153,7 @@ export interface PublicProductCard {
   mainImage: string | null;
   priceRef: string | null;
   moq: string | null;
-  company: { id: number; nameZh: string } | null;
+  company: { id: number; nameZh: string; nameEn: string } | null;
 }
 
 /** 官网产品详情（PRD §6.4；下架/删除 404；gallery 含主图+图集，otherProducts ≤8） */

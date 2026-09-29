@@ -76,6 +76,7 @@ export default async function CategoryPage({
 
   return (
     <>
+      {/* 设计稿 03：类目横幅为类目配图 + 深青渐变遮罩（设计稿即以类目 16:9 配图作底图） */}
       <div className="page-banner" style={{ height: 210 }}>
         {bannerImage && (
           // eslint-disable-next-line @next/next/no-img-element

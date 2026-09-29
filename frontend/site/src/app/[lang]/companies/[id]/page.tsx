@@ -168,8 +168,9 @@ export default async function CompanyDetailPage({
           )}
         </Reveal>
 
+        {/* 简介：白底直接排布（设计稿 05 无卡片） */}
         {intro && (
-          <Reveal className="card" style={{ marginTop: 26 }}>
+          <Reveal style={{ marginTop: 26 }}>
             <div className="sec-head" style={{ marginBottom: 20, textAlign: 'left' }}>
               <div className="kicker" style={{ marginLeft: 0 }}>
                 {t.company.aboutKicker}
@@ -181,8 +182,10 @@ export default async function CompanyDetailPage({
           </Reveal>
         )}
 
+        {/* 荣誉资质墙（设计稿 05）：白底直排，标题居中、证书 4 列大图无卡片底；
+            设计稿标题位于证书列中部，数据量不定时以页眉形式置于上方（任务 2.12 走查结论） */}
         {company.honorImages.length > 0 && (
-          <Reveal className="card" style={{ marginTop: 26 }}>
+          <Reveal style={{ marginTop: 26 }}>
             <div className="sec-head" style={{ marginBottom: 26 }}>
               <div className="kicker">{t.company.honorKicker}</div>
               <h2>{t.company.honorTitle}</h2>

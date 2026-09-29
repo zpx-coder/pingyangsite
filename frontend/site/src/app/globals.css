@@ -1540,8 +1540,9 @@ a {
 .co-facts .v{font-size:14px;color:var(--ink);word-break:break-all}
 .co-facts .v a{color:var(--tea);text-decoration:none}
 .co-facts .v a:hover{color:var(--gold-d)}
-.honor-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.honor-grid img{width:100%;height:180px;object-fit:contain;background:var(--warm);border:1px solid var(--line);border-radius:6px;padding:10px}
+/* 荣誉资质墙（设计稿 05）：白底直排 4 列大图证书，不加卡片底与边框（证书图自带底衬） */
+.honor-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:26px}
+.honor-grid img{width:100%;height:250px;object-fit:contain}
 
 /* ================= 新闻列表/详情（任务 2.8，PRD §6.6/6.7） ================= */
 /* 置顶大卡（ui.html news-feat 视觉值移植） */

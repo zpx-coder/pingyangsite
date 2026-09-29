@@ -41,7 +41,7 @@ export default function SiteFooter({
             {/* 深色背景以白色圆角底衬承载 logo（方案 §4.2） */}
             <span className="logo-tile">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="logo" src="/img/logo.jpg" alt="平阳 logo" />
+              <img className="logo" src="/img/logo.jpg" alt={t.logoAlt} />
             </span>
             <p className="desc">{t.footer.desc}</p>
           </div>

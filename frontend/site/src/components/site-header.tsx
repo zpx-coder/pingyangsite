@@ -52,7 +52,7 @@ export default function SiteHeader({
           <Link className="brand" href={base} aria-label="home">
             {/* 白底位置直接展示官方 logo（方案 §4.2：整体使用不可裁剪） */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="logo" src="/img/logo.jpg" alt="平阳 logo" />
+            <img className="logo" src="/img/logo.jpg" alt={t.logoAlt} />
             <div>
               <div className="t1">
                 {lang === 'zh-CN' ? (

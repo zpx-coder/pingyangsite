@@ -102,7 +102,9 @@ export default function CategoryTabs({
                   </div>
                   <div className="bd">
                     <h4>{pickLang(lang, product.nameZh, product.nameEn)}</h4>
-                    <div className="co">{product.company?.nameZh ?? t.unlinkedCompany}</div>
+                    <div className="co">
+                      {product.company ? pickLang(lang, product.company.nameZh, product.company.nameEn) : t.unlinkedCompany}
+                    </div>
                     <div className="pr">
                       {product.priceRef && <span className="price">{product.priceRef}</span>}
                       {product.moq && <span className="moq">{t.moqPrefix}{product.moq}</span>}
