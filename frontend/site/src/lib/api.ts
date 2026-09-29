@@ -186,3 +186,16 @@ export interface PublicCompany {
   honorImages: string[];
   categories: { id: number; nameZh: string; nameEn: string }[];
 }
+
+/** 企业详情页产品卡（PRD §6.5：该企业全部已发布产品，后端随详情分页返回） */
+export interface PublicCompanyProduct {
+  id: number;
+  nameZh: string;
+  nameEn: string;
+  mainImage: string | null;
+  priceRef: string | null;
+  moq: string | null;
+}
+
+/** 官网企业详情 = 企业公开视图 + 分页产品列表 */
+export type PublicCompanyDetail = PublicCompany & { products: Paged<PublicCompanyProduct> };

@@ -7,28 +7,12 @@ import Link from 'next/link';
 import Reveal from '@/components/motion/reveal';
 import { pickLang, type Paged, type PublicCompany, type PublicProductCard } from '@/lib/api';
 import { dict, type Lang } from '@/lib/i18n';
+import { pageNumbers } from '@/lib/pagination';
 
 const PAGE_SIZE = 12;
 
 // 企业 Logo 缺失时的字标底色（与设计稿 logo-mark 三色轮换一致）
 const MARK_COLORS = ['#336065', '#28484C', '#A9713D'];
-
-/** 分页窗口：≤7 页全列，否则首尾+当前±1 并省略号连接 */
-function pageNumbers(current: number, total: number): (number | '…')[] {
-  if (total <= 7) {
-    return Array.from({ length: total }, (_, i) => i + 1);
-  }
-  const set = new Set([1, total, current, current - 1, current + 1]);
-  const pages = [...set].filter((n) => n >= 1 && n <= total).sort((a, b) => a - b);
-  const out: (number | '…')[] = [];
-  for (const n of pages) {
-    if (out.length && n - (out[out.length - 1] as number) > 1) {
-      out.push('…');
-    }
-    out.push(n);
-  }
-  return out;
-}
 
 export default function CategoryTabs({
   lang,

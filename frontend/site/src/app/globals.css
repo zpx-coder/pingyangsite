@@ -1531,3 +1531,14 @@ a {
 .modal-card p{color:var(--body);font-size:14px;line-height:1.8;margin:0 0 24px}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes popIn{from{transform:translateY(14px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+
+/* ================= 企业详情页（任务 2.7，PRD §6.5） ================= */
+.tags{display:flex;gap:8px;flex-wrap:wrap}
+.co-facts{display:flex;flex-wrap:wrap;gap:14px 34px;margin-top:22px;padding-top:20px;border-top:1px dashed var(--line)}
+.co-facts .f{min-width:150px}
+.co-facts .l{font-size:12px;color:var(--muted);letter-spacing:2px;margin-bottom:4px}
+.co-facts .v{font-size:14px;color:var(--ink);word-break:break-all}
+.co-facts .v a{color:var(--tea);text-decoration:none}
+.co-facts .v a:hover{color:var(--gold-d)}
+.honor-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.honor-grid img{width:100%;height:180px;object-fit:contain;background:var(--warm);border:1px solid var(--line);border-radius:6px;padding:10px}
