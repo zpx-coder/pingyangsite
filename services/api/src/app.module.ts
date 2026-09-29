@@ -2,7 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import configuration, { resolveEnvFilePaths } from './config/configuration';
 import { HealthModule } from './health/health.module';
-import { AppLoggerService } from './logger/app-logger.service';
+import { LoggerModule } from './logger/logger.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { RedisModule } from './redis/redis.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -12,9 +15,11 @@ import { AppLoggerService } from './logger/app-logger.service';
       load: [configuration],
       envFilePath: resolveEnvFilePaths(),
     }),
+    LoggerModule,
+    PrismaModule,
+    RedisModule,
     HealthModule,
+    AuthModule,
   ],
-  providers: [AppLoggerService],
-  exports: [AppLoggerService],
 })
 export class AppModule {}
