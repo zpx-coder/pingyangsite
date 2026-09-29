@@ -1,0 +1,29 @@
+'use client';
+
+// 语言切换（PRD §5.1）：切换后当前页以另一语言重新渲染；选择持久化（LocalStorage + Cookie）
+import { usePathname, useRouter } from 'next/navigation';
+import { LANGS, type Lang } from '@/lib/i18n';
+
+export default function LanguageSwitcher({ lang }: { lang: Lang }) {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  function switchTo(target: Lang) {
+    if (target === lang) return;
+    // /zh-CN/news -> /en/news：仅替换 [lang] 段，保持其余路径
+    const rest = pathname.replace(new RegExp(`^/${lang}(?=/|$)`), '');
+    localStorage.setItem('lang', target);
+    document.cookie = `lang=${target}; path=/; max-age=31536000; samesite=lax`;
+    router.push(`/${target}${rest}`);
+  }
+
+  return (
+    <span className="lang-pill" aria-label="language switch">
+      {LANGS.map((item) => (
+        <b key={item} className={item === lang ? 'on' : ''} onClick={() => switchTo(item)}>
+          {item === 'zh-CN' ? '中文' : 'EN'}
+        </b>
+      ))}
+    </span>
+  );
+}
