@@ -77,13 +77,24 @@ export class NewsService {
     // 仅对实际改动过的双语字段做联动（同企业/类目/产品：未触碰字段保留原值与原标记）
     const pairs: BilingualFieldPair[] = [];
     if (dto.titleZh !== undefined || dto.titleEn !== undefined) {
-      pairs.push({ key: 'titleEn', zh: dto.titleZh ?? existing.titleZh, en: dto.titleEn ?? null });
+      // prevEn：表单回传未改动的机器翻译英文时保持原翻译标记（方案 §5.3 原值保留）
+      pairs.push({ key: 'titleEn', zh: dto.titleZh ?? existing.titleZh, en: dto.titleEn ?? null, prevEn: existing.titleEn });
     }
     if (dto.summaryZh !== undefined || dto.summaryEn !== undefined) {
-      pairs.push({ key: 'summaryEn', zh: dto.summaryZh ?? existing.summaryZh ?? null, en: dto.summaryEn ?? null });
+      pairs.push({
+        key: 'summaryEn',
+        zh: dto.summaryZh ?? existing.summaryZh ?? null,
+        en: dto.summaryEn ?? null,
+        prevEn: existing.summaryEn,
+      });
     }
     if (dto.contentZh !== undefined || dto.contentEn !== undefined) {
-      pairs.push({ key: 'contentEn', zh: dto.contentZh ?? existing.contentZh ?? null, en: dto.contentEn ?? null });
+      pairs.push({
+        key: 'contentEn',
+        zh: dto.contentZh ?? existing.contentZh ?? null,
+        en: dto.contentEn ?? null,
+        prevEn: existing.contentEn,
+      });
     }
     const data = await this.buildData(
       pairs,

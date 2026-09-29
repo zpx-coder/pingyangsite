@@ -201,6 +201,18 @@ describe('NewsService.update', () => {
     });
   });
 
+  it('回传未改动的机器翻译英文值保持原标记（prevEn 原值保留）', async () => {
+    const { service, prisma, translation } = makeService({});
+    (prisma.news.findFirst as jest.Mock).mockResolvedValue(EXISTING); // 校验 + 详情两次读取
+    await service.update(1, { titleZh: '新标题', titleEn: 'Old Title' });
+    expect(prisma.news.update).toHaveBeenCalledWith({
+      where: { id: 1 },
+      data: expect.objectContaining({ titleEn: 'Old Title', machineFields: '["titleEn"]' }),
+    });
+    // 与上次一致的英文不触发翻译，也不判为人工填写
+    expect(translation.translateSafe).not.toHaveBeenCalled();
+  });
+
   it('发布时间字符串转为 Date，其余可空字段回退存量', async () => {
     const { service, prisma } = makeService({ 新标题: 'New Title' });
     (prisma.news.findFirst as jest.Mock).mockResolvedValue(EXISTING); // 校验 + 详情两次读取
