@@ -223,19 +223,13 @@ export class InquiryService {
   private async assertRateLimit(ip: string): Promise<void> {
     try {
       const minuteKey = `${RATE_KEY_PREFIX}${ip}:min`;
-      const minuteCount = await this.redis.incr(minuteKey);
-      if (minuteCount === 1) {
-        await this.redis.expire(minuteKey, RATE_MINUTE_WINDOW_SECONDS);
-      }
+      const minuteCount = await this.incrWithTtl(minuteKey, RATE_MINUTE_WINDOW_SECONDS);
       if (minuteCount > RATE_MINUTE_LIMIT) {
         throw new HttpException('提交过于频繁，请稍后再试', HttpStatus.TOO_MANY_REQUESTS);
       }
 
       const dayKey = `${RATE_KEY_PREFIX}${ip}:day`;
-      const dayCount = await this.redis.incr(dayKey);
-      if (dayCount === 1) {
-        await this.redis.expire(dayKey, this.secondsUntilNextDayCst());
-      }
+      const dayCount = await this.incrWithTtl(dayKey, this.secondsUntilNextDayCst());
       if (dayCount > RATE_DAY_LIMIT) {
         throw new HttpException('今日提交次数已达上限，请明日再试', HttpStatus.TOO_MANY_REQUESTS);
       }
@@ -245,6 +239,18 @@ export class InquiryService {
       }
       // Redis 异常时降级放行（验证码同为 Redis 存储，Redis 不可用时提交已被验证码环节阻断）
     }
+  }
+
+  /** INCR 并为首个计数设置过期；expire 静默失败时删除 key 重置计数，避免无 TTL 的 key 永久封禁该 IP */
+  private async incrWithTtl(key: string, ttlSeconds: number): Promise<number> {
+    const count = await this.redis.incr(key);
+    if (count === 1) {
+      const expired = await this.redis.expire(key, ttlSeconds);
+      if (!expired) {
+        await this.redis.del(key);
+      }
+    }
+    return count;
   }
 
   /** 列表/导出共用的筛选条件（快照关键词 + 提交时间范围，CST 自然日边界） */

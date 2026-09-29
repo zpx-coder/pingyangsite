@@ -141,6 +141,16 @@ describe('InquiryService.submit 限流', () => {
     expect(redis.expire).toHaveBeenCalledWith(`${RATE_KEY_PREFIX}1.2.3.4:day`, expect.any(Number));
   });
 
+  it('expire 静默失败 → 删除计数 key 重置，避免该 IP 被永久限流', async () => {
+    const { service, prisma, redis } = makeService();
+    (redis.get as jest.Mock).mockResolvedValueOnce('AB12');
+    (redis.expire as jest.Mock).mockResolvedValue(false);
+    await expect(service.submit(makeDto(), '1.2.3.4')).resolves.toEqual({ id: 7 });
+    expect(redis.del).toHaveBeenCalledWith(`${RATE_KEY_PREFIX}1.2.3.4:min`);
+    expect(redis.del).toHaveBeenCalledWith(`${RATE_KEY_PREFIX}1.2.3.4:day`);
+    expect(prisma.inquiry.create).toHaveBeenCalled();
+  });
+
   it('Redis 计数异常 → 降级放行（不阻断提交）', async () => {
     const { service, prisma, redis } = makeService();
     (redis.get as jest.Mock).mockResolvedValueOnce('AB12');
