@@ -6,6 +6,7 @@
 //   - honorImages 以 JSON 数组字符串存 TEXT 列，对外返回解析后的数组。
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
+import { parseJsonStringArray } from '../common/json-array.util';
 import { PrismaService } from '../prisma/prisma.service';
 import { TranslationService } from '../translation/translation.service';
 import { translateFields } from '../translation/translate-fields.util';
@@ -155,7 +156,7 @@ export class CompanyService {
         phone: dto.phone ?? existing.phone,
         email: dto.email ?? existing.email,
         website: dto.website ?? existing.website,
-        honorImages: dto.honorImages ?? parseImages(existing.honorImages),
+        honorImages: dto.honorImages ?? parseJsonStringArray(existing.honorImages),
         sort: dto.sort ?? existing.sort,
         status: dto.status ?? existing.status,
       },
@@ -300,7 +301,7 @@ export class CompanyService {
     const { companyCategories, honorImages, ...rest } = row;
     return {
       ...rest,
-      honorImages: parseImages(honorImages),
+      honorImages: parseJsonStringArray(honorImages),
       categories: companyCategories.map((link) => ({
         id: link.category.id,
         nameZh: link.category.nameZh,
@@ -325,25 +326,12 @@ export class CompanyService {
       website: row.website,
       introZh: row.introZh,
       introEn: row.introEn,
-      honorImages: parseImages(row.honorImages),
+      honorImages: parseJsonStringArray(row.honorImages),
       categories: row.companyCategories.map((link) => ({
         id: link.category.id,
         nameZh: link.category.nameZh,
         nameEn: link.category.nameEn,
       })),
     };
-  }
-}
-
-/** TEXT 列 JSON 数组防御解析（历史脏数据按空数组处理） */
-export function parseImages(raw: string | null | undefined): string[] {
-  if (!raw) {
-    return [];
-  }
-  try {
-    const parsed: unknown = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === 'string') : [];
-  } catch {
-    return [];
   }
 }

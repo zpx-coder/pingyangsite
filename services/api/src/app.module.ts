@@ -11,6 +11,7 @@ import { UploadModule } from './upload/upload.module';
 import { TranslationModule } from './translation/translation.module';
 import { CategoryModule } from './category/category.module';
 import { CompanyModule } from './company/company.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { CompanyModule } from './company/company.module';
     TranslationModule,
     CategoryModule,
     CompanyModule,
+    ProductModule,
   ],
 })
 export class AppModule {}
