@@ -393,7 +393,7 @@ describe('ProductService.listPublished', () => {
   it('指定类目 → 仅已发布未删除且按类目过滤', async () => {
     const { service, prisma } = makeService();
     (prisma.product.findMany as jest.Mock).mockResolvedValue([
-      { ...PRODUCT_ROW, company: { id: 20, nameZh: '企业A' } },
+      { ...PRODUCT_ROW, company: { id: 20, nameZh: '企业A', nameEn: 'Co A' } },
     ]);
     (prisma.product.count as jest.Mock).mockResolvedValue(1);
     const result = await service.listPublished(5, 1, 12);
@@ -402,7 +402,7 @@ describe('ProductService.listPublished', () => {
     );
     expect(result.list[0]).toMatchObject({
       id: 1,
-      company: { id: 20, nameZh: '企业A' },
+      company: { id: 20, nameZh: '企业A', nameEn: 'Co A' },
     });
     expect(result.list[0]).not.toHaveProperty('images');
   });

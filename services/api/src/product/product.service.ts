@@ -185,7 +185,7 @@ export class ProductService {
         orderBy: [{ sort: 'asc' }, { updatedAt: 'desc' }, { id: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
-        include: { company: { select: { id: true, nameZh: true } } },
+        include: { company: { select: { id: true, nameZh: true, nameEn: true } } },
       }),
       this.prisma.product.count({ where }),
     ]);
@@ -200,7 +200,7 @@ export class ProductService {
         mainImage: row.mainImage,
         priceRef: row.priceRef,
         moq: row.moq,
-        company: row.company ? { id: row.company.id, nameZh: row.company.nameZh } : null,
+        company: row.company ? { id: row.company.id, nameZh: row.company.nameZh, nameEn: row.company.nameEn } : null,
       })),
     };
   }
