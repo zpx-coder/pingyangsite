@@ -142,6 +142,31 @@ export interface PublicProductCard {
   company: { id: number; nameZh: string } | null;
 }
 
+/** 官网产品详情（PRD §6.4；下架/删除 404；gallery 含主图+图集，otherProducts ≤8） */
+export interface PublicProductDetail {
+  id: number;
+  nameZh: string;
+  nameEn: string;
+  category: { id: number; nameZh: string; nameEn: string };
+  company: { id: number; nameZh: string; nameEn: string } | null;
+  mainImage: string | null;
+  gallery: string[];
+  introZh: string | null;
+  introEn: string | null;
+  detailZh: string | null;
+  detailEn: string | null;
+  priceRef: string | null;
+  moq: string | null;
+  otherProducts: {
+    id: number;
+    nameZh: string;
+    nameEn: string;
+    mainImage: string | null;
+    priceRef: string | null;
+    moq: string | null;
+  }[];
+}
+
 /** 官网企业（类目页企业列表项 / 企业详情；honorImages 为 JSON 数组解析结果） */
 export interface PublicCompany {
   id: number;

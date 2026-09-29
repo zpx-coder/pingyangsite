@@ -1480,3 +1480,54 @@ a {
 .empty{text-align:center;padding:70px 20px;background:var(--warm);border-radius:6px}
 .empty .ico{width:56px;height:56px;margin:0 auto 16px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:20px}
 .empty p{color:var(--muted);letter-spacing:2px;font-size:14px;margin:0}
+
+/* ================= 产品详情页（任务 2.6，值取自设计稿 ui.html） ================= */
+.detail-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:46px}
+.gallery .main{height:430px;border-radius:6px;overflow:hidden;box-shadow:var(--shadow)}
+.gallery .main img{width:100%;height:100%;object-fit:cover}
+.gallery .thumbs{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-top:14px}
+.gallery .thumbs img{height:82px;width:100%;object-fit:cover;border-radius:4px;cursor:pointer;border:2px solid transparent;transition:.25s}
+.gallery .thumbs img.on{border-color:var(--gold)}
+.gallery .thumbs img:hover{border-color:var(--gold-2)}
+.detail-info h1{font-family:var(--serif);font-size:27px;color:var(--ink);letter-spacing:1px;margin:0}
+.detail-info h1 .en{display:block;color:var(--muted);font-size:13px;margin:6px 0 16px;letter-spacing:0;font-family:var(--sans);font-weight:400}
+.detail-info .price{font-family:var(--serif);font-size:30px;color:var(--tea);font-weight:800;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:14px 0;display:flex;align-items:baseline;gap:14px}
+.detail-info .price span{font-size:13px;color:var(--muted);font-weight:400}
+.detail-info .spec{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+.detail-info .spec td{padding:8px 10px;border:1px solid var(--line)}
+.detail-info .spec td:first-child{background:var(--gold-3);color:#6B5310;width:96px;text-align:center;letter-spacing:2px}
+.detail-info .spec a{color:var(--tea);text-decoration:none;font-weight:600}
+.detail-info .acts{display:flex;gap:14px;margin-top:8px}
+.detail-info .acts .btn{flex:1;justify-content:center}
+.co-mini{display:flex;align-items:center;gap:12px;background:var(--warm);border:1px solid var(--line);border-radius:6px;padding:14px 16px;margin-top:18px;transition:.25s;text-decoration:none;color:inherit}
+.co-mini:hover{border-color:var(--gold);background:var(--gold-3)}
+.co-mini.none{cursor:default;font-size:13px;color:var(--muted)}
+.co-mini.none:hover{border-color:var(--line);background:var(--warm)}
+.co-mini .logo-mark.sm{width:44px;height:44px;font-size:19px;box-shadow:none}
+.co-mini .cx{flex:1;min-width:0}
+.co-mini .cx .n{font-weight:700;color:var(--ink);font-size:15px}
+.co-mini .cx .en{font-size:12px;color:var(--muted);margin-top:2px}
+.co-mini .go{color:var(--tea);font-weight:600;font-size:13px;white-space:nowrap;text-decoration:none}
+.co-mini .go:hover{color:var(--gold-d)}
+.detail-sec{margin-top:56px}
+.form-card{background:linear-gradient(135deg,#fff 0%,#FBF7EC 100%);border:1px solid var(--line);border-top:3px solid var(--gold);border-radius:6px;padding:34px;box-shadow:var(--shadow)}
+.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.fg label{display:block;font-size:13.5px;color:var(--ink);margin-bottom:7px;letter-spacing:1px}
+.fg label i{color:var(--red);font-style:normal}
+.fg input,.fg textarea,.fg select{width:100%;border:1px solid var(--line);border-radius:4px;padding:10px 14px;font-size:14px;font-family:var(--sans);outline:none;transition:.25s;background:#fff;color:var(--ink)}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,169,62,.15)}
+.fg{margin-bottom:16px}
+.fg textarea{resize:vertical;min-height:96px}
+.captcha-row{display:flex;gap:12px;align-items:flex-end}
+.captcha-row > div:first-child{display:flex;flex-direction:column}
+.captcha-box{width:110px;height:42px;border-radius:4px;background:linear-gradient(120deg,var(--gold-3),#EBD9A8);display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--gold-2);overflow:hidden}
+.captcha-box svg{width:100%;height:100%;display:block}
+.ferr{display:block;color:var(--red);font-size:12.5px;margin-top:6px}
+.form-serr{margin-top:10px;color:var(--red);font-size:13.5px}
+.modal-mask{position:fixed;inset:0;background:rgba(20,28,30,.55);display:flex;align-items:center;justify-content:center;z-index:200;animation:fadeIn .25s}
+.modal-card{background:#fff;border-radius:10px;border-top:3px solid var(--gold);padding:40px 46px;text-align:center;max-width:420px;width:calc(100% - 40px);box-shadow:var(--shadow-lg);animation:popIn .3s}
+.modal-ico{width:64px;height:64px;border-radius:50%;background:var(--gold-3);color:var(--gold-d);font-size:30px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+.modal-card h3{font-family:var(--serif);font-size:22px;color:var(--ink);margin:0 0 10px}
+.modal-card p{color:var(--body);font-size:14px;line-height:1.8;margin:0 0 24px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{transform:translateY(14px) scale(.96);opacity:0}to{transform:none;opacity:1}}
