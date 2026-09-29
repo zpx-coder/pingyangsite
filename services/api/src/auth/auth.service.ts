@@ -3,7 +3,7 @@
 //   - 同账号连续失败 5 次锁定 15 分钟（Redis 计数 + 锁定标记，提示剩余时间）；
 //   - 登录成功重建会话（防会话固定）；退出销毁会话；
 //   - 登录/退出写入 audit 日志（脱敏）。
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import type { Request } from 'express';
 import type { RedisClientType } from 'redis';
 import { compare, hashSync } from 'bcryptjs';
@@ -11,6 +11,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AppLoggerService } from '../logger/app-logger.service';
 import { REDIS_CLIENT } from '../redis/redis.module';
 import type { LoginDto } from './dto/login.dto';
+import type { ChangePhoneDto } from './dto/change-phone.dto';
+import type { ChangePasswordDto } from './dto/change-password.dto';
 import {
   LOGIN_FAILURE_WINDOW_SECONDS,
   LOGIN_LOCK_SECONDS,
@@ -61,6 +63,44 @@ export class AuthService {
     await this.destroySession(req);
   }
 
+  /** 修改绑定手机号（PRD §7.0：原密码验证，首期不接短信验证码；不强制重登） */
+  async changePhone(dto: ChangePhoneDto, req: Request): Promise<{ phone: string }> {
+    const currentPhone = req.session.adminPhone ?? '';
+    const user = await this.prisma.adminUser.findUnique({ where: { phone: currentPhone } });
+    const passwordOk = await compare(dto.password, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
+    if (!user || !passwordOk) {
+      throw new UnauthorizedException('当前密码错误');
+    }
+    const newPhone = dto.newPhone.trim();
+    const existing = await this.prisma.adminUser.findUnique({ where: { phone: newPhone } });
+    if (existing && existing.id !== user.id) {
+      throw new BadRequestException('该手机号已被使用');
+    }
+    await this.prisma.adminUser.update({ where: { id: user.id }, data: { phone: newPhone } });
+    // 会话内手机号同步为最新（PRD 仅要求改密强制重登）
+    req.session.adminPhone = newPhone;
+    await this.saveSession(req);
+    this.logger.audit('account.phone', newPhone, { ip: req.ip ?? 'unknown' });
+    return { phone: newPhone };
+  }
+
+  /** 修改密码（PRD §7.0：原密码验证；成功后销毁会话强制重新登录） */
+  async changePassword(dto: ChangePasswordDto, req: Request): Promise<void> {
+    const phone = req.session.adminPhone ?? '';
+    const user = await this.prisma.adminUser.findUnique({ where: { phone } });
+    const passwordOk = await compare(dto.currentPassword, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
+    if (!user || !passwordOk) {
+      throw new UnauthorizedException('当前密码错误');
+    }
+    await this.prisma.adminUser.update({
+      where: { id: user.id },
+      data: { passwordHash: hashSync(dto.newPassword, 10) },
+    });
+    this.logger.audit('account.password', phone, { ip: req.ip ?? 'unknown' });
+    // 强制重新登录（PRD §7.0）：销毁当前会话，后续请求返回 401
+    await this.destroySession(req);
+  }
+
   /** 失败计数：窗口内 +1，达到阈值即锁定并清零计数 */
   private async recordFailure(phone: string): Promise<void> {
     const count = await this.redis.incr(loginFailKey(phone));
@@ -90,6 +130,12 @@ export class AuthService {
   private destroySession(req: Request): Promise<void> {
     return new Promise((resolve, reject) => {
       req.session.destroy((err) => (err ? reject(err) : resolve()));
+    });
+  }
+
+  private saveSession(req: Request): Promise<void> {
+    return new Promise((resolve, reject) => {
+      req.session.save((err) => (err ? reject(err) : resolve()));
     });
   }
 }
