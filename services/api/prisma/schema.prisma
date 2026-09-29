@@ -1,0 +1,182 @@
+// 平阳产业带官网数据模型（开发计划方案 §5.1：PRD §8.2 八张表 + 补充）
+//
+// MySQL 5.6.16 适配约定（全链路遵守）：
+//   - 无原生 JSON 列：images / honor_images / machine_fields / config
+//     一律 TEXT 列存储，应用层统一序列化（封装于 packages/shared，禁止散落
+//     手工 JSON.parse）；TEXT 列在 MySQL 5.6 不支持 DEFAULT，故 required 列
+//     由应用层显式写入（初始值 "[]" / "{}"）。
+//   - 字符集显式 utf8mb4（连接串 character_set=utf8mb4 + 库级 utf8mb4）。
+//   - Prisma DateTime → DATETIME(3)，MySQL 5.6.4+ 支持。
+//   - 不使用 5.7+/8.0 独有特性（JSON 列、窗口函数、CTE），为升级预留兼容。
+//
+// 状态约定：
+//   - products.status:  0 草稿 / 1 已发布 / 2 已下架
+//   - companies.status / categories.status: 0 下架 / 1 上架
+//   - news.status:      0 草稿 / 1 已发布
+//   - inquiries.status: 0 未处理 / 1 已处理
+// 逻辑删除（PRD §7.1/§7.2/§7.4.1）：products / companies / news 以 deleted_at
+// 标记，不物理删行；categories 仅空类目可物理删除（PRD §7.3）。
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 类目
+model Category {
+  id            Int       @id @default(autoincrement())
+  nameZh        String    @map("name_zh") @db.VarChar(200)
+  nameEn        String    @map("name_en") @db.VarChar(200)
+  iconUrl       String?   @map("icon_url") @db.VarChar(255)
+  introZh       String?   @map("intro_zh") @db.VarChar(500)
+  introEn       String?   @map("intro_en") @db.VarChar(500)
+  sort          Int       @default(0)
+  status        Int       @default(1) // 0 下架 / 1 上架
+  machineFields String?   @map("machine_fields") @db.Text // 机器翻译字段标记（JSON 序列化）
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  products          Product[]
+  companyCategories CompanyCategory[]
+
+  @@map("categories")
+}
+
+// 企业
+model Company {
+  id            Int       @id @default(autoincrement())
+  nameZh        String    @map("name_zh") @db.VarChar(200)
+  nameEn        String    @map("name_en") @db.VarChar(200)
+  logoUrl       String?   @map("logo_url") @db.VarChar(255)
+  coverUrl      String?   @map("cover_url") @db.VarChar(255)
+  foundedYear   Int?      @map("founded_year")
+  scale         String?   @db.VarChar(100)
+  address       String?   @db.VarChar(500)
+  contactName   String?   @map("contact_name") @db.VarChar(100)
+  phone         String?   @db.VarChar(50)
+  email         String?   @db.VarChar(255)
+  website       String?   @db.VarChar(255)
+  introZh       String?   @map("intro_zh") @db.Text
+  introEn       String?   @map("intro_en") @db.Text
+  honorImages   String    @map("honor_images") @db.Text // JSON 数组序列化，应用层初始写 "[]"
+  machineFields String?   @map("machine_fields") @db.Text
+  sort          Int       @default(0)
+  status        Int       @default(1) // 0 下架 / 1 上架
+  deletedAt     DateTime? @map("deleted_at") // 逻辑删除（PRD §7.2）
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  products          Product[]
+  companyCategories CompanyCategory[]
+
+  @@map("companies")
+}
+
+// 企业-类目关联（多对多：企业可归属多个类目）
+model CompanyCategory {
+  companyId  Int @map("company_id")
+  categoryId Int @map("category_id")
+
+  company  Company  @relation(fields: [companyId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@id([companyId, categoryId])
+  @@map("company_categories")
+}
+
+// 产品（company_id 可空：产品可不关联企业，PRD §12 假设 1）
+model Product {
+  id            Int       @id @default(autoincrement())
+  categoryId    Int       @map("category_id")
+  companyId     Int?      @map("company_id")
+  nameZh        String    @map("name_zh") @db.VarChar(200)
+  nameEn        String    @map("name_en") @db.VarChar(200)
+  mainImage     String?   @map("main_image") @db.VarChar(255)
+  images        String    @db.Text // JSON 数组序列化，应用层初始写 "[]"
+  introZh       String?   @map("intro_zh") @db.Text
+  introEn       String?   @map("intro_en") @db.Text
+  detailZh      String?   @map("detail_zh") @db.Text // 富文本
+  detailEn      String?   @map("detail_en") @db.Text
+  priceRef      String?   @map("price_ref") @db.VarChar(100) // 价格参考（文本，如"面议"）
+  moq           String?   @db.VarChar(100) // 起订量（文本）
+  machineFields String?   @map("machine_fields") @db.Text
+  sort          Int       @default(0)
+  status        Int       @default(0) // 0 草稿 / 1 已发布 / 2 已下架
+  deletedAt     DateTime? @map("deleted_at") // 逻辑删除（计划任务 1.7）
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  category Category @relation(fields: [categoryId], references: [id])
+  company  Company? @relation(fields: [companyId], references: [id])
+
+  @@index([categoryId, status, sort]) // 计划 §5.1
+  @@map("products")
+}
+
+// 新闻
+model News {
+  id          Int       @id @default(autoincrement())
+  titleZh     String    @map("title_zh") @db.VarChar(200)
+  titleEn     String    @map("title_en") @db.VarChar(200)
+  coverUrl    String?   @map("cover_url") @db.VarChar(255)
+  summaryZh   String?   @map("summary_zh") @db.VarChar(500)
+  summaryEn   String?   @map("summary_en") @db.VarChar(500)
+  contentZh   String?   @map("content_zh") @db.Text // 富文本
+  contentEn   String?   @map("content_en") @db.Text
+  publishTime DateTime? @map("publish_time") // 定时发布（计划任务 1.8）
+  isTop       Boolean   @default(false) @map("is_top")
+  status      Int       @default(0) // 0 草稿 / 1 已发布
+  deletedAt   DateTime? @map("deleted_at") // 逻辑删除（PRD §7.4.1）
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@index([publishTime, status, isTop]) // 计划 §5.1
+  @@map("news")
+}
+
+// 询盘（product_id / company_id 为快照引用，不建外键：关联对象删除后
+// 快照字段仍完整展示，PRD §7.5 关键规则）
+model Inquiry {
+  id                  Int      @id @default(autoincrement())
+  productId           Int?     @map("product_id")
+  companyId           Int?     @map("company_id")
+  productNameSnapshot String?  @map("product_name_snapshot") @db.VarChar(200)
+  companyNameSnapshot String?  @map("company_name_snapshot") @db.VarChar(200)
+  name                String   @db.VarChar(100) // 客户姓名
+  companyName         String?  @map("company_name") @db.VarChar(200) // 客户公司
+  country             String?  @db.VarChar(100)
+  email               String?  @db.VarChar(255)
+  phone               String?  @db.VarChar(50)
+  content             String   @db.Text // 留言内容
+  lang                String   @default("zh-CN") @db.VarChar(10) // 来源语言
+  status              Int      @default(0) // 0 未处理 / 1 已处理
+  ip                  String?  @db.VarChar(45) // IPv6 兼容长度
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt, status]) // 计划 §5.1
+  @@map("inquiries")
+}
+
+// 页面内容（key-value，config 为 TEXT 存 JSON 序列化）
+model PageContent {
+  key       String   @id @db.VarChar(191) // 计划 §5.1：key UNIQUE（主键即唯一）
+  config    String   @db.Text // JSON 对象序列化
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("page_contents")
+}
+
+// 管理员（首期单超级管理员账号，PRD §7.0）
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  phone        String   @unique @db.VarChar(20) // 登录账号（手机号）
+  passwordHash String   @map("password_hash") @db.VarChar(255) // 加盐哈希（bcrypt）
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("admin_users")
+}
