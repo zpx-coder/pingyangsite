@@ -14,6 +14,7 @@ import { CompanyModule } from './company/company.module';
 import { ProductModule } from './product/product.module';
 import { NewsModule } from './news/news.module';
 import { PageContentModule } from './page-content/page-content.module';
+import { InquiryModule } from './inquiry/inquiry.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { PageContentModule } from './page-content/page-content.module';
     ProductModule,
     NewsModule,
     PageContentModule,
+    InquiryModule,
   ],
 })
 export class AppModule {}
