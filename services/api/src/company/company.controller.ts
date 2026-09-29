@@ -17,6 +17,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { AdminGuard } from '../auth/admin.guard';
 import { AppLoggerService } from '../logger/app-logger.service';
@@ -26,6 +27,8 @@ import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { QueryCompanyDto } from './dto/query-company.dto';
 
+@ApiTags('企业')
+@ApiCookieAuth('admin-session')
 @Controller('api/v1/admin/companies')
 @UseGuards(AdminGuard)
 export class CompanyController {
@@ -34,16 +37,19 @@ export class CompanyController {
     private readonly logger: AppLoggerService,
   ) {}
 
+  @ApiOperation({ summary: '企业分页列表' })
   @Get()
   list(@Query() query: QueryCompanyDto) {
     return this.company.list(query);
   }
 
+  @ApiOperation({ summary: '企业详情' })
   @Get(':id')
   detail(@Param('id', ParseIntPipe) id: number) {
     return this.company.detail(id);
   }
 
+  @ApiOperation({ summary: '新增企业' })
   @Post()
   async create(@Body() dto: CreateCompanyDto, @Req() req: Request) {
     const created = await this.company.create(dto);
@@ -51,6 +57,7 @@ export class CompanyController {
     return created;
   }
 
+  @ApiOperation({ summary: '编辑企业' })
   @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -62,6 +69,7 @@ export class CompanyController {
     return updated;
   }
 
+  @ApiOperation({ summary: '删除企业' })
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
     await this.company.remove(id);

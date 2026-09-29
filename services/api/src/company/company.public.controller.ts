@@ -2,6 +2,7 @@
 //   GET /api/v1/public/companies          类目页企业列表（仅上架，categoryId 可选，12/页）
 //   GET /api/v1/public/companies/:id      企业详情（含类目标签与分页产品列表）
 import { BadRequestException, Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CompanyService } from './company.service';
 
 const PUBLIC_PAGE_SIZE = 12;
@@ -11,10 +12,12 @@ const optionalIntPipe = new ParseIntPipe({
   exceptionFactory: () => new BadRequestException('参数格式不正确'),
 });
 
+@ApiTags('企业')
 @Controller('api/v1/public/companies')
 export class CompanyPublicController {
   constructor(private readonly company: CompanyService) {}
 
+  @ApiOperation({ summary: '官网企业列表' })
   @Get()
   listPublished(
     @Query('categoryId', optionalIntPipe) categoryId: number | undefined,
@@ -24,6 +27,7 @@ export class CompanyPublicController {
     return this.company.listPublished(categoryId ?? 0, page ?? 1, pageSize ?? PUBLIC_PAGE_SIZE);
   }
 
+  @ApiOperation({ summary: '官网企业详情' })
   @Get(':id')
   publicDetail(
     @Param('id', ParseIntPipe) id: number,

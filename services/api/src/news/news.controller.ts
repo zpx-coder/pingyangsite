@@ -18,6 +18,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { AdminGuard } from '../auth/admin.guard';
 import { AppLoggerService } from '../logger/app-logger.service';
@@ -28,6 +29,8 @@ import { UpdateNewsDto } from './dto/update-news.dto';
 import { QueryNewsDto } from './dto/query-news.dto';
 import { StatusNewsDto } from './dto/status-news.dto';
 
+@ApiTags('新闻')
+@ApiCookieAuth('admin-session')
 @Controller('api/v1/admin/news')
 @UseGuards(AdminGuard)
 export class NewsController {
@@ -36,16 +39,19 @@ export class NewsController {
     private readonly logger: AppLoggerService,
   ) {}
 
+  @ApiOperation({ summary: '查询新闻列表' })
   @Get()
   list(@Query() query: QueryNewsDto) {
     return this.news.list(query);
   }
 
+  @ApiOperation({ summary: '查询新闻详情' })
   @Get(':id')
   detail(@Param('id', ParseIntPipe) id: number) {
     return this.news.detail(id);
   }
 
+  @ApiOperation({ summary: '新增新闻' })
   @Post()
   async create(@Body() dto: CreateNewsDto, @Req() req: Request) {
     const created = await this.news.create(dto);
@@ -53,6 +59,7 @@ export class NewsController {
     return created;
   }
 
+  @ApiOperation({ summary: '编辑新闻' })
   @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -64,6 +71,7 @@ export class NewsController {
     return updated;
   }
 
+  @ApiOperation({ summary: '发布或下线新闻' })
   @Put(':id/status')
   async updateStatus(
     @Param('id', ParseIntPipe) id: number,
@@ -75,6 +83,7 @@ export class NewsController {
     return updated;
   }
 
+  @ApiOperation({ summary: '删除新闻' })
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
     await this.news.remove(id);

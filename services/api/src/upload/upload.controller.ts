@@ -4,6 +4,7 @@
 // 均须登录会话（AdminGuard）；scope 白名单防路径穿越；上传成功留 audit。
 import { Controller, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { AdminGuard } from '../auth/admin.guard';
 import { AppLoggerService } from '../logger/app-logger.service';
@@ -11,6 +12,8 @@ import type { StagedFile, StoredObject } from '../storage/storage.types';
 import { imageMulterOptions, videoMulterOptions } from './multer-options';
 import { UploadService } from './upload.service';
 
+@ApiTags('上传')
+@ApiCookieAuth('admin-session')
 @Controller('api/v1/admin/upload')
 @UseGuards(AdminGuard)
 export class UploadController {
@@ -19,6 +22,7 @@ export class UploadController {
     private readonly logger: AppLoggerService,
   ) {}
 
+  @ApiOperation({ summary: '上传图片' })
   @Post('image')
   @UseInterceptors(FileInterceptor('file', imageMulterOptions))
   async uploadImage(
@@ -31,6 +35,7 @@ export class UploadController {
     return stored;
   }
 
+  @ApiOperation({ summary: '上传视频' })
   @Post('video')
   @UseInterceptors(FileInterceptor('file', videoMulterOptions))
   async uploadVideo(

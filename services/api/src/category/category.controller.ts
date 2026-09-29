@@ -18,6 +18,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { AdminGuard } from '../auth/admin.guard';
 import { AppLoggerService } from '../logger/app-logger.service';
@@ -27,6 +28,8 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { QueryCategoryDto } from './dto/query-category.dto';
 
+@ApiTags('类目')
+@ApiCookieAuth('admin-session')
 @Controller('api/v1/admin/categories')
 @UseGuards(AdminGuard)
 export class CategoryController {
@@ -35,16 +38,19 @@ export class CategoryController {
     private readonly logger: AppLoggerService,
   ) {}
 
+  @ApiOperation({ summary: '类目分页列表' })
   @Get()
   list(@Query() query: QueryCategoryDto) {
     return this.category.list(query);
   }
 
+  @ApiOperation({ summary: '类目详情' })
   @Get(':id')
   detail(@Param('id', ParseIntPipe) id: number) {
     return this.category.detail(id);
   }
 
+  @ApiOperation({ summary: '新增类目' })
   @Post()
   async create(@Body() dto: CreateCategoryDto, @Req() req: Request) {
     const created = await this.category.create(dto);
@@ -52,6 +58,7 @@ export class CategoryController {
     return created;
   }
 
+  @ApiOperation({ summary: '编辑类目' })
   @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -63,6 +70,7 @@ export class CategoryController {
     return updated;
   }
 
+  @ApiOperation({ summary: '一键翻译类目' })
   @Put(':id/translate')
   async translate(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
     const updated = await this.category.translate(id);
@@ -70,6 +78,7 @@ export class CategoryController {
     return updated;
   }
 
+  @ApiOperation({ summary: '删除类目' })
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
     await this.category.remove(id);

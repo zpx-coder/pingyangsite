@@ -7,6 +7,7 @@
 //   POST   /api/v1/admin/inquiries/batch     批量标记已处理/未处理
 // 注意：stats/export 路由声明在 :id 之前，避免被参数路由截获。
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { AdminGuard } from '../auth/admin.guard';
 import { AppLoggerService } from '../logger/app-logger.service';
@@ -18,6 +19,8 @@ import { BatchInquiryDto } from './dto/batch-inquiry.dto';
 
 const EXPORT_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
+@ApiTags('询盘')
+@ApiCookieAuth('admin-session')
 @Controller('api/v1/admin/inquiries')
 @UseGuards(AdminGuard)
 export class InquiryController {
@@ -26,16 +29,19 @@ export class InquiryController {
     private readonly logger: AppLoggerService,
   ) {}
 
+  @ApiOperation({ summary: '查询询盘列表' })
   @Get()
   list(@Query() query: QueryInquiryDto) {
     return this.inquiry.list(query);
   }
 
+  @ApiOperation({ summary: '询盘统计' })
   @Get('stats')
   stats() {
     return this.inquiry.stats();
   }
 
+  @ApiOperation({ summary: '导出询盘 xlsx' })
   @Get('export')
   async export(@Query() query: QueryInquiryDto, @Req() req: Request, @Res() res: Response) {
     const { buffer, count } = await this.inquiry.exportData(query);
@@ -49,11 +55,13 @@ export class InquiryController {
     this.logger.audit('inquiry.export', req.session.adminPhone ?? 'unknown', { count, filters: query });
   }
 
+  @ApiOperation({ summary: '查询询盘详情' })
   @Get(':id')
   detail(@Param('id', ParseIntPipe) id: number) {
     return this.inquiry.detail(id);
   }
 
+  @ApiOperation({ summary: '标记询盘处理状态' })
   @Put(':id/status')
   async updateStatus(@Param('id', ParseIntPipe) id: number, @Body() dto: StatusInquiryDto, @Req() req: Request) {
     const updated = await this.inquiry.updateStatus(id, dto.status);
@@ -61,6 +69,7 @@ export class InquiryController {
     return updated;
   }
 
+  @ApiOperation({ summary: '批量标记询盘状态' })
   @Post('batch')
   async batch(@Body() dto: BatchInquiryDto, @Req() req: Request) {
     const result = await this.inquiry.batch(dto.ids, dto.action);

@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import session from 'express-session';
 import { RedisStore } from 'connect-redis';
 import { AppModule } from './app.module';
@@ -60,6 +61,25 @@ async function bootstrap(): Promise<void> {
   app.useGlobalFilters(new HttpExceptionFilter(logger));
 
   const port = config.get<number>('port', 3001);
+
+  // 接口文档（任务 1.13）：开发/预发环境可访问 /docs 查测全部接口，生产环境关闭
+  const env = config.get<string>('env', 'development');
+  if (env !== 'production') {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('平阳产业带官网 API')
+      .setDescription(
+        '官网与后台全部接口。管理端接口依赖登录会话（HttpOnly Cookie，Swagger 页面不可手动填写）：' +
+          '先在「认证」分组调用登录接口，浏览器自动携带会话 Cookie 后即可调用其余管理端接口。',
+      )
+      .setVersion('1.0.0')
+      .addCookieAuth(SESSION_COOKIE_NAME, { type: 'apiKey', in: 'cookie' }, 'admin-session')
+      .build();
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('docs', app, document, {
+      swaggerOptions: { persistAuthorization: true },
+    });
+    logger.log(`接口文档已启用 http://127.0.0.1:${port}/docs（生产环境自动关闭）`);
+  }
   await app.listen(port);
   logger.log(
     `API 已启动 http://127.0.0.1:${port}（env=${config.get<string>('env')} ` +

@@ -19,6 +19,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { AdminGuard } from '../auth/admin.guard';
 import { AppLoggerService } from '../logger/app-logger.service';
@@ -30,6 +31,8 @@ import { QueryProductDto } from './dto/query-product.dto';
 import { StatusProductDto } from './dto/status-product.dto';
 import { BatchProductDto } from './dto/batch-product.dto';
 
+@ApiTags('产品')
+@ApiCookieAuth('admin-session')
 @Controller('api/v1/admin/products')
 @UseGuards(AdminGuard)
 export class ProductController {
@@ -38,16 +41,19 @@ export class ProductController {
     private readonly logger: AppLoggerService,
   ) {}
 
+  @ApiOperation({ summary: '产品分页列表' })
   @Get()
   list(@Query() query: QueryProductDto) {
     return this.product.list(query);
   }
 
+  @ApiOperation({ summary: '产品详情' })
   @Get(':id')
   detail(@Param('id', ParseIntPipe) id: number) {
     return this.product.detail(id);
   }
 
+  @ApiOperation({ summary: '新增产品' })
   @Post()
   async create(@Body() dto: CreateProductDto, @Req() req: Request) {
     const created = await this.product.create(dto);
@@ -55,6 +61,7 @@ export class ProductController {
     return created;
   }
 
+  @ApiOperation({ summary: '编辑产品' })
   @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -66,6 +73,7 @@ export class ProductController {
     return updated;
   }
 
+  @ApiOperation({ summary: '产品状态流转' })
   @Put(':id/status')
   async updateStatus(
     @Param('id', ParseIntPipe) id: number,
@@ -77,6 +85,7 @@ export class ProductController {
     return updated;
   }
 
+  @ApiOperation({ summary: '产品批量操作' })
   @Post('batch')
   async batch(@Body() dto: BatchProductDto, @Req() req: Request) {
     const result = await this.product.batch(dto.ids, dto.action);
@@ -88,6 +97,7 @@ export class ProductController {
     return result;
   }
 
+  @ApiOperation({ summary: '删除产品' })
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
     await this.product.remove(id);
