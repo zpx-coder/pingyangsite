@@ -1589,3 +1589,222 @@ a {
 .contact-bar .txt{color:var(--muted);font-size:14px;line-height:1.9}
 .contact-bar .txt .hrs{margin-bottom:4px;color:var(--body)}
 .contact-bar .btn{margin-left:auto;flex-shrink:0}
+
+/* ================= 响应式适配（任务 2.11：≥768px 可用，768/1440/1920 三档无破版） ================= */
+
+/* 1280 以下：1200 定宽容器转流式（左右 24px 安全边距，1440 档保持原定宽设计） */
+@media (max-width: 1279px) {
+  .container {
+    width: auto;
+    margin: 0 24px;
+  }
+  /* 关于平阳装饰图原以 -24px 探出右缘，流式布局下收回到容器内避免横向滚动 */
+  .about-imgs .small {
+    right: 0;
+  }
+}
+
+/* 1100 以下：多列栅格降档 */
+@media (max-width: 1100px) {
+  .site-footer .cols {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px 44px;
+  }
+  .cat-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .prod-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .news-list2 {
+    grid-template-columns: 1fr 1fr;
+  }
+  .news-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .honor-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .contact-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* 900 以下：头部压缩、双列栅格、横向布局转堆叠 */
+@media (max-width: 900px) {
+  .hero {
+    height: 460px;
+  }
+  .hero-title {
+    font-size: 40px;
+    letter-spacing: 4px;
+  }
+  .hero-sub {
+    font-size: 15px;
+  }
+  .site-head .container {
+    height: 80px;
+  }
+  .head-cta {
+    gap: 16px;
+  }
+  .nav a {
+    padding: 13px 16px;
+    letter-spacing: 1px;
+    font-size: 14.5px;
+  }
+  /* 面板改以视口（.nav 全宽粘性容器）居中，避免以短链接为中心时左缘溢出视口 */
+  .nav .drop {
+    position: static;
+  }
+  .nav .drop-panel {
+    left: 50%;
+    width: min(560px, calc(100vw - 48px));
+  }
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .news-feat {
+    grid-template-columns: 1fr;
+  }
+  .news-feat .im {
+    height: 230px;
+  }
+  .about-split {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
+  .about-imgs .big img {
+    height: 320px;
+  }
+  .prod-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .form-row2 {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .contact-band .container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 26px;
+  }
+  .contact-bar {
+    flex-wrap: wrap;
+    gap: 20px 30px;
+  }
+  .contact-bar .btn {
+    margin-left: 0;
+  }
+  .stat-band .inner {
+    flex-wrap: wrap;
+  }
+  .stat {
+    flex: 1 1 45%;
+  }
+  .stat + .stat::before {
+    display: none;
+  }
+  .sec-head h2 {
+    font-size: 28px;
+  }
+  .article-body {
+    padding: 30px 28px;
+  }
+  .video-media {
+    height: 300px;
+  }
+  .form-card {
+    padding: 26px 22px;
+  }
+  .tabs button {
+    padding: 12px 16px;
+    letter-spacing: 2px;
+  }
+}
+
+/* 768 档（验收宽度）：最后一档收紧，保证无横向滚动 */
+@media (max-width: 768px) {
+  .container {
+    margin: 0 20px;
+  }
+  .hero {
+    height: 420px;
+  }
+  .hero-title {
+    font-size: 34px;
+    letter-spacing: 3px;
+  }
+  .hero-sub {
+    font-size: 14px;
+  }
+  .site-head .container {
+    height: 72px;
+  }
+  .brand .t1 {
+    font-size: 21px;
+    letter-spacing: 2px;
+  }
+  .head-cta .tel .n {
+    font-size: 16px;
+  }
+  .head-cta .btn {
+    padding: 9px 16px;
+    font-size: 13px;
+  }
+  .nav a {
+    padding: 12px 12px;
+  }
+  .section {
+    padding: 56px 0;
+  }
+  .cat-grid {
+    gap: 16px;
+  }
+  .news-grid {
+    gap: 16px;
+  }
+  .news-list2 {
+    gap: 16px;
+  }
+  .prod-grid {
+    gap: 14px;
+  }
+  .contact-cards {
+    gap: 16px;
+  }
+  .contact-card {
+    padding: 28px 20px;
+  }
+  .map-card img {
+    height: 240px;
+  }
+  .page-banner h1 {
+    font-size: 30px;
+    letter-spacing: 4px;
+  }
+  .article-head h1 {
+    font-size: 26px;
+  }
+  .news-nav {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+  .stat .n {
+    font-size: 30px;
+  }
+  .sec-head h2 {
+    font-size: 26px;
+  }
+  .sec-head {
+    margin-bottom: 36px;
+  }
+  .co-facts .f {
+    min-width: 130px;
+  }
+  .crumb {
+    font-size: 12.5px;
+    gap: 8px;
+  }
+}
