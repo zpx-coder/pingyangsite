@@ -8,7 +8,16 @@ import LanguageSwitcher from './language-switcher';
 import { dict, type Lang } from '@/lib/i18n';
 import { pickLang, type PublicCategory } from '@/lib/api';
 
-export default function SiteHeader({ lang, categories = [] }: { lang: Lang; categories?: PublicCategory[] }) {
+export default function SiteHeader({
+  lang,
+  categories = [],
+  phone,
+}: {
+  lang: Lang;
+  categories?: PublicCategory[];
+  // contact_info.phone 配置驱动（任务 2.10 与页脚同源）；缺失时回退字典占位
+  phone?: string | null;
+}) {
   const pathname = usePathname();
   const t = dict[lang];
 
@@ -63,7 +72,7 @@ export default function SiteHeader({ lang, categories = [] }: { lang: Lang; cate
               <div>
                 {t.hotlineLabel}
                 <br />
-                <span className="n">0577-6372 8888</span>
+                <span className="n">{phone?.trim() || t.hotline}</span>
               </div>
             </div>
             <Link className="btn btn-deep btn-sm" href={`${base}/contact`}>

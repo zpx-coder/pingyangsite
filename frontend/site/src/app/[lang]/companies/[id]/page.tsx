@@ -1,18 +1,47 @@
 // 企业详情页（任务 2.7，PRD §6.5）：横幅 → 企业信息区（Logo/双语名/类目标签/基本信息/成立年份/规模）→
 // 企业简介（富文本）→ 荣誉资质墙（有配置才展示）→ 该企业产品（分页 12/页）。
 // 数据：公开企业详情接口（随附分页产品）；下架/删除/不存在企业 404。
+import type { Metadata } from 'next';
+import { cache } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import CompanyProducts from '@/components/company/company-products';
 import Reveal from '@/components/motion/reveal';
 import { getApi, pickLang, type PublicCompanyDetail } from '@/lib/api';
 import { dict, isLang } from '@/lib/i18n';
+import { buildMetadata } from '@/lib/seo';
 
 // 企业 Logo 缺失时的字标底色（与类目页 logo-mark 三色轮换一致）
 const MARK_COLORS = ['#336065', '#28484C', '#A9713D'];
 
 // 横幅回退图为设计稿静态素材（方案 §4.5 素材规范，本地化存储）
 const FALLBACK_COVER = '/img/banner2.jpg';
+
+// cache 保证 generateMetadata 与页面渲染同一请求内只取一次详情
+const getCompany = cache((id: number) => getApi<PublicCompanyDetail>(`/api/v1/public/companies/${id}`));
+
+// 企业详情 TDK：实体名称 + 简介（任务 2.10）；取数失败回退站点默认，页面本身仍走 404 兜底
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string; id: string }>;
+}): Promise<Metadata> {
+  const { lang: rawLang, id: rawId } = await params;
+  if (!isLang(rawLang)) return {};
+  const lang = rawLang;
+  const id = Number.parseInt(rawId, 10);
+  if (!Number.isInteger(id) || id < 1) return buildMetadata(lang);
+  const company = await getCompany(id).catch(() => null);
+  if (!company) return buildMetadata(lang);
+  return buildMetadata(lang, {
+    title: pickLang(lang, company.nameZh, company.nameEn),
+    description: pickLang(lang, company.introZh, company.introEn)
+      .replace(/<[^>]*>/g, '')
+      .trim()
+      .slice(0, 200),
+    path: `companies/${id}`,
+  });
+}
 
 export default async function CompanyDetailPage({
   params,
@@ -31,7 +60,7 @@ export default async function CompanyDetailPage({
     notFound();
   }
 
-  const company = await getApi<PublicCompanyDetail>(`/api/v1/public/companies/${id}`).catch(() => null);
+  const company = await getCompany(id).catch(() => null);
   if (!company) {
     notFound(); // 下架 / 删除 / 不存在：后端 404，页面按不存在处理
   }

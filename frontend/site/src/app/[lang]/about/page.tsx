@@ -1,14 +1,23 @@
 // 平阳介绍页（任务 2.4，PRD §6.2）：横幅 + 区位优势 + 介绍视频（点击加载）+ 富文本正文 + 产业概况。
 // 数据：about_page 配置（横幅图/视频/富文本）与上架类目（产业概况）；接口失败/配置为空时对应模块隐藏。
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import VideoPlayer from '@/components/about/video-player';
 import Reveal from '@/components/motion/reveal';
 import { getApi, pickLang, type AboutPageConfig, type PageContentMap, type PublicCategory } from '@/lib/api';
 import { dict, isLang } from '@/lib/i18n';
+import { buildMetadata } from '@/lib/seo';
 
 // 封面图与横幅回退图为设计稿静态素材（方案 §4.5 素材规范，本地化存储）
 const FALLBACK_BANNER = '/img/banner1.jpg';
 const VIDEO_COVER = '/img/poster.jpg';
+
+// 平阳介绍页 TDK/hreflang（任务 2.10）
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLang(lang)) return {};
+  return buildMetadata(lang, { title: dict[lang].seo.aboutTitle, path: 'about' });
+}
 
 export default async function AboutPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;

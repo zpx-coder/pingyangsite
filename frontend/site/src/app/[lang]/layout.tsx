@@ -27,7 +27,7 @@ export default async function LangLayout({
 
   return (
     <>
-      <SiteHeader lang={lang} categories={categories ?? []} />
+      <SiteHeader lang={lang} categories={categories ?? []} phone={configs?.contact_info?.phone} />
       <main>{children}</main>
       <SiteFooter lang={lang} categories={categories ?? []} configs={configs} />
     </>

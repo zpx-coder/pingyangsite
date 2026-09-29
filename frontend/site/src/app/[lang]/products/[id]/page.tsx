@@ -2,6 +2,8 @@
 // 产品详情富文本 → 该企业其他产品（PRD 新增，设计稿无此模块）→ 询盘表单（验证码+成功弹窗）。
 // 数据：公开产品详情接口；下架/删除/不存在产品 404（后端按此语义返回）。
 // 布局对齐设计稿：详情卡片紧贴面包屑（无上边距）、内边距 24px。
+import type { Metadata } from 'next';
+import { cache } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Gallery from '@/components/product/gallery';
@@ -9,9 +11,36 @@ import InquiryForm from '@/components/product/inquiry-form';
 import Reveal from '@/components/motion/reveal';
 import { getApi, pickLang, type PublicProductDetail } from '@/lib/api';
 import { dict, isLang } from '@/lib/i18n';
+import { buildMetadata } from '@/lib/seo';
 
 // 企业 Logo 缺失时的字标底色（与类目页 logo-mark 三色轮换一致）
 const MARK_COLORS = ['#336065', '#28484C', '#A9713D'];
+
+// cache 保证 generateMetadata 与页面渲染同一请求内只取一次详情
+const getProduct = cache((id: number) => getApi<PublicProductDetail>(`/api/v1/public/products/${id}`));
+
+// 产品详情 TDK：实体名称 + 简介（任务 2.10）；取数失败回退站点默认，页面本身仍走 404 兜底
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string; id: string }>;
+}): Promise<Metadata> {
+  const { lang: rawLang, id: rawId } = await params;
+  if (!isLang(rawLang)) return {};
+  const lang = rawLang;
+  const id = Number.parseInt(rawId, 10);
+  if (!Number.isInteger(id) || id < 1) return buildMetadata(lang);
+  const product = await getProduct(id).catch(() => null);
+  if (!product) return buildMetadata(lang);
+  return buildMetadata(lang, {
+    title: pickLang(lang, product.nameZh, product.nameEn),
+    description: pickLang(lang, product.introZh, product.introEn)
+      .replace(/<[^>]*>/g, '')
+      .trim()
+      .slice(0, 200),
+    path: `products/${id}`,
+  });
+}
 
 export default async function ProductDetailPage({
   params,
@@ -30,7 +59,7 @@ export default async function ProductDetailPage({
     notFound();
   }
 
-  const product = await getApi<PublicProductDetail>(`/api/v1/public/products/${id}`).catch(() => null);
+  const product = await getProduct(id).catch(() => null);
   if (!product) {
     notFound(); // 下架 / 删除 / 不存在：后端 404，页面按不存在处理
   }

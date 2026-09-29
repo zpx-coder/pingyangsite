@@ -2,6 +2,7 @@
 // 统一封装后端公开接口的 {code,message,data} 结构、超时与错误处理。
 // API_BASE 默认指向本机后端（本地部署策略），生产环境经环境变量注入（任务 5.2）。
 import type { Lang } from './i18n';
+import { PAGE_REVALIDATE_SECONDS } from './seo';
 
 export const API_BASE = process.env.API_BASE_URL ?? 'http://127.0.0.1:3001';
 
@@ -18,7 +19,12 @@ export async function getApi<T>(path: string): Promise<T> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
-    const res = await fetch(`${API_BASE}${path}`, { signal: controller.signal, cache: 'no-store' });
+    // 任务 2.10：页面级 ISR——公开内容按 PAGE_REVALIDATE_SECONDS 重验证（getApi 仅服务端组件使用，
+    // 客户端组件一律相对路径直连，不会命中 Next 数据缓存）
+    const res = await fetch(`${API_BASE}${path}`, {
+      signal: controller.signal,
+      next: { revalidate: PAGE_REVALIDATE_SECONDS },
+    });
     if (!res.ok) {
       throw new Error(`API HTTP ${res.status}`);
     }

@@ -1,12 +1,21 @@
 // 新闻列表页（任务 2.8，PRD §6.6）：横幅（新闻动态）→ 面包屑 → 置顶大卡 + 三列网格（12/页分页）。
 // 数据：公开新闻列表接口（仅已发布且到达发布时间，置顶优先 + 发布时间倒序，后端已排）。
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import NewsList from '@/components/news/news-list';
 import { getApi, type Paged, type PublicNews } from '@/lib/api';
 import { dict, isLang } from '@/lib/i18n';
+import { buildMetadata } from '@/lib/seo';
 
 // 横幅回退图为设计稿静态素材（方案 §4.5 素材规范，本地化存储）
 const NEWS_BANNER = '/img/n4.jpg';
+
+// 新闻列表页 TDK/hreflang（任务 2.10）
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLang(lang)) return {};
+  return buildMetadata(lang, { title: dict[lang].seo.newsTitle, path: 'news' });
+}
 
 export default async function NewsPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;

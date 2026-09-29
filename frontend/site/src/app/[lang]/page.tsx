@@ -1,6 +1,7 @@
 // 首页（任务 2.3，PRD §6.1）：宣传图轮播 / 数据带 / 产业走马灯 / 特色产业类目（≤8）
 // / 关于平阳 / 新闻热点（4 条）/ 联系带。数据全部来自后端公开接口（配置驱动），
 // 任一接口不可用或为空时对应区块隐藏，页面本身不报错。
+import type { Metadata } from 'next';
 import HeroSection from '@/components/home/hero-section';
 import StatBand from '@/components/home/stat-band';
 import Ticker from '@/components/home/ticker';
@@ -10,8 +11,16 @@ import NewsSection from '@/components/home/news-section';
 import ContactBand from '@/components/home/contact-band';
 import { getApi, type HomeBannerConfig, type PageContentMap, type PublicCategory, type PublicNews } from '@/lib/api';
 import { dict, isLang } from '@/lib/i18n';
+import { buildMetadata } from '@/lib/seo';
 
 const HOME_BANNER_DEFAULT_INTERVAL_SECONDS = 5;
+
+// 首页 TDK/hreflang：站点默认标题与描述（任务 2.10）
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLang(lang)) return {};
+  return buildMetadata(lang);
+}
 
 export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;

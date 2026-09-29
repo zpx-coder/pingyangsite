@@ -1,13 +1,40 @@
 // 产业类目页（任务 2.5，PRD §6.3）：横幅 + 简介与数量 + 产品/企业双标签列表（各 12/页）。
 // 数据：公开类目列表定位类目（上架才可见），产品/企业第 1 页服务端预取；下架或不存在类目 404。
+import type { Metadata } from 'next';
+import { cache } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import CategoryTabs from '@/components/category/category-tabs';
 import Reveal from '@/components/motion/reveal';
 import { getApi, pickLang, type Paged, type PublicCategory, type PublicCompany, type PublicProductCard } from '@/lib/api';
 import { dict, isLang } from '@/lib/i18n';
+import { buildMetadata } from '@/lib/seo';
 
 const PAGE_SIZE = 12;
+
+// cache 保证 generateMetadata 与页面渲染同一请求内只取一次类目列表
+const getCategories = cache(() => getApi<PublicCategory[]>('/api/v1/public/categories'));
+
+// 类目页 TDK：类目名 + 简介（任务 2.10）；类目不存在时回退站点默认，页面本身仍走 404 兜底
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string; id: string }>;
+}): Promise<Metadata> {
+  const { lang: rawLang, id: rawId } = await params;
+  if (!isLang(rawLang)) return {};
+  const lang = rawLang;
+  const id = Number.parseInt(rawId, 10);
+  if (!Number.isInteger(id) || id < 1) return buildMetadata(lang);
+  const categories = await getCategories().catch(() => null);
+  const category = categories?.find((item) => item.id === id);
+  if (!category) return buildMetadata(lang);
+  return buildMetadata(lang, {
+    title: pickLang(lang, category.nameZh, category.nameEn),
+    description: pickLang(lang, category.introZh, category.introEn).slice(0, 200),
+    path: `categories/${id}`,
+  });
+}
 
 export default async function CategoryPage({
   params,
@@ -27,7 +54,7 @@ export default async function CategoryPage({
   }
 
   const [categories, products, companies] = await Promise.all([
-    getApi<PublicCategory[]>('/api/v1/public/categories').catch(() => null),
+    getCategories().catch(() => null),
     getApi<Paged<PublicProductCard>>(`/api/v1/public/products?categoryId=${id}&page=1&pageSize=${PAGE_SIZE}`).catch(
       () => null,
     ),

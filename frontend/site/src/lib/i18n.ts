@@ -10,6 +10,8 @@ export const dict = {
   'zh-CN': {
     topbarTag: '链接全球 · 服务采购商',
     hotlineLabel: '全国服务热线',
+    // 页头热线回退值（contact_info.phone 配置缺失时展示；与页脚同一数据源）
+    hotline: '0577-6372 8888',
     contactCta: '联系我们',
     nav: { home: '首页', about: '平阳介绍', categories: '特色产业', news: '新闻动态', contact: '联系我们' },
     footer: {
@@ -177,10 +179,21 @@ export const dict = {
       pinLabel: '平阳产业带服务中心',
       inquiryBtn: '在线询盘',
     },
+    seo: {
+      site: '平阳产业带官网',
+      defaultTitle: '平阳产业带官网 - 平阳特色产业官方展示与对接平台',
+      defaultDescription:
+        '平阳产业带官网集中展示平阳六大特色产业集群（宠物用品、塑编包装、印刷包装、礼品文具、汽摩配、机械装备）、优势产品与优质企业，为全球采购商提供一站式产业对接服务。',
+      defaultKeywords: '平阳产业带,平阳特色产业,宠物用品,塑编包装,印刷包装,礼品文具,汽摩配,机械装备,产品采购,产业对接',
+      aboutTitle: '平阳介绍',
+      newsTitle: '新闻动态',
+      contactTitle: '联系我们',
+    },
   },
   en: {
     topbarTag: 'Connecting the World · Serving Buyers',
     hotlineLabel: 'Service Hotline',
+    hotline: '0577-6372 8888',
     contactCta: 'Contact Us',
     nav: { home: 'Home', about: 'About Pingyang', categories: 'Industries', news: 'News', contact: 'Contact' },
     footer: {
@@ -346,6 +359,16 @@ export const dict = {
       guide: 'To send an inquiry, please use the inquiry form on any product detail page. We will reply within 1–2 business days.',
       pinLabel: 'Pingyang Industrial Belt Service Center',
       inquiryBtn: 'Send Inquiry',
+    },
+    seo: {
+      site: 'Pingyang Industrial Belt',
+      defaultTitle: 'Pingyang Industrial Belt | Official Industry Showcase & Matchmaking Platform',
+      defaultDescription:
+        'The official showcase and matchmaking platform for Pingyang industry clusters — pet products, woven packaging, printing & packaging, gifts & stationery, auto parts and machinery. Presenting quality products and premium enterprises for global buyers.',
+      defaultKeywords: 'Pingyang industrial belt,pingyang industries,pet products,woven packaging,printing packaging,gifts stationery,auto parts,machinery,sourcing,suppliers',
+      aboutTitle: 'About Pingyang',
+      newsTitle: 'News',
+      contactTitle: 'Contact Us',
     },
   },
 } as const satisfies Record<Lang, unknown>;

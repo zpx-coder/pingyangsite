@@ -1,13 +1,22 @@
 // 联系我们页（任务 2.9，PRD §6.8）：横幅 + 联系方式卡片组 + 地图静态占位 + 工作时间/引导语。
 // 数据：contact_info 配置（后台页面内容-联系我们，保存后即时生效）；
 // mapCoordinate 首期仅存储备用（坐标为后台配置项，后续接入地图 API），页面仍展示静态地图占位图。
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Reveal from '@/components/motion/reveal';
 import { getApi, pickLang, type ContactInfoConfig, type PageContentMap, type PublicCategory } from '@/lib/api';
 import { dict, isLang } from '@/lib/i18n';
+import { buildMetadata } from '@/lib/seo';
 
 // 横幅与地图占位均为设计稿静态素材（方案 §4.5 素材规范，本地化存储）
 const MAP_IMAGE = '/img/map.jpg';
+
+// 联系我们页 TDK/hreflang（任务 2.10）
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLang(lang)) return {};
+  return buildMetadata(lang, { title: dict[lang].seo.contactTitle, path: 'contact' });
+}
 
 export default async function ContactPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;
