@@ -28,6 +28,7 @@
 | 2026-09-29 09:40 | 任务 0.3：本地基础设施 | docker-compose.yml（MySQL 5.6.51/Redis 7.0.15）+ scripts/dev-up.sh/dev-down.sh + docker/mysql/init 建库脚本（显式 utf8mb4）；实测 Docker Hub 无 mysql:5.6.16 标签 → 采用 5.6 系列最终版 5.6.51（ADR-0002 记录，兼容面一致）；验收通过：一键起库成功（MySQL 5.6.51 utf8mb4 库 pingyangsite + Redis 7.0.15）、启停循环验证数据卷保留；期间修复 config/dev.local.env 误入库（补 .gitignore 规则并移出版本控制） |
 | 2026-09-29 10:20 | 任务 0.4：数据层 | services/api 建立 Prisma 数据模型（8 张表 + machine_fields/deleted_at 补充列，JSON 字段一律 TEXT + utf8mb4 + DATETIME(3) + 计划 §5.1 全部索引）、init 迁移、种子脚本（超级管理员 bcrypt 哈希 + page_contents 5 配置项默认值，幂等）；npm 脚本审批策略阻断 postinstall → 手动 prisma generate；pingyang 用户授权 shadow db 后迁移成功；验收通过：8 表建成、种子后 admin_users=1 / page_contents=5、TEXT 列与复合索引逐项核对无误 |
 | 2026-09-29 10:28 | 任务 1.1：后端骨架 | NestJS 12 骨架：多环境配置（dev.local/prod 双 env 解析 + 生产强制 SESSION_SECRET）、统一响应 {code,message,data}（拦截器 + 异常过滤器，未知异常不泄漏细节）、winston 按日滚动日志（30 天）+ 独立 audit 通道、脱敏工具（测试发现手机号正则位数与 token 半遮两处缺陷已修复复验）；验收通过：health 返回统一结构、404 收敛 40400、audit 日志落盘且电话/邮箱/密码/Token 全部脱敏；npm audit 3 高危为 Prisma CLI 传递依赖（deepmerge-ts，仅开发期 CLI 面，上游未修，跟踪中） |
+| 2026-09-29 10:35 | 任务 1.2：认证与会话 | 手机号+密码登录（bcryptjs 加盐比对，账号不存在亦执行 dummy 比对减小时序差异）、Redis 服务端会话（express-session + connect-redis v10，8 小时过期，HttpOnly + SameSite=Lax + 生产 Secure，登录重建会话防固定）、连续失败 5 次锁定 15 分钟并提示剩余时间、退出销毁会话、登录/退出 audit 留痕；登录/会话/退出/锁定 6 连测全部符合 PRD §7.0；期间发现 connect-redis v10 仅兼容 node-redis（弃 ioredis 换 redis v5，重写客户端与键操作 API） |
 
 ## 待办（后续）
 
