@@ -42,6 +42,7 @@
 | 2026-09-29 14:31 | 任务 1.13：接口文档——Swagger 自动生成，全部接口可查可测 | 引入 @nestjs/swagger 12 + swagger-ui-express 5（2026-09-29 负责人批准）；main.ts 开发/预发环境挂载 /docs（DocumentBuilder 中文标题/描述/版本 + addCookieAuth 会话方案 'admin-session'，生产环境自动关闭）；全部 16 个控制器加 @ApiTags 中文分组（认证/类目/企业/产品/新闻/页面内容/询盘/健康检查/上传），管理端 11 个控制器加 @ApiCookieAuth，54 个路由方法加 @ApiOperation 中文 summary；全部 25 个 DTO 每个字段加 @ApiProperty/@ApiPropertyOptional（中文描述+示例，@IsIn 枚举注明取值，分页注明默认 20/12 页）；jest moduleNameMapper 新增 @nestjs/swagger → test-utils/swagger.mock.ts 测试替身（纯 ESM 包同 @nestjs/common 处理）；验收通过：/docs 与 /docs-json 均 200 / 41 条路径全部枚举、54 个操作全部带中文分组、18 个 schema 字段完整 / 全量 64 套件 489 用例全绿、覆盖率 99.4/88.82/98.37/99.43 维持达标 / 依赖安装无新增高危漏洞（deepmerge-ts 3 个为既有） |
 ## 待办（后续）
 
+- [ ] 项目负责人评审阶段 1 验收报告（docs/reports/阶段1-后端API验收报告.md），确认后进入阶段 2
 - [ ] 项目负责人整体评审 PRD v1.4 与原型 v1.2，定稿
 - [x] 确认 UI 设计稿 v2.0（2026-09-28 定稿：配色 / Logo 展示 / 动效强度 / 后台同风格）
 - [x] 初始化 Git 仓库（2026-09-29 完成：c1/c2 两次提交，main + develop 已推送 GitHub，远程走 SSH）
