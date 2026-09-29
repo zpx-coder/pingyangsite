@@ -13,6 +13,7 @@ import { CategoryModule } from './category/category.module';
 import { CompanyModule } from './company/company.module';
 import { ProductModule } from './product/product.module';
 import { NewsModule } from './news/news.module';
+import { PageContentModule } from './page-content/page-content.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { NewsModule } from './news/news.module';
     CompanyModule,
     ProductModule,
     NewsModule,
+    PageContentModule,
   ],
 })
 export class AppModule {}

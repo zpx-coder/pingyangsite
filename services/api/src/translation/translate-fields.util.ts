@@ -9,6 +9,12 @@ export interface BilingualFieldPair {
   key: string;
   zh: string | null | undefined;
   en: string | null | undefined;
+  /**
+   * 上次保存的英文值（可选）：本次提交值与上次一致时保持原标记。
+   * 用于整表单保存场景（如页面内容配置，管理员提交完整配置对象），
+   * 避免「未改动的机器翻译字段被误判为人工填写而清除标记」。
+   */
+  prevEn?: string | null | undefined;
 }
 
 export interface TranslateFieldsResult {
@@ -28,6 +34,11 @@ export async function translateFields(
   for (const pair of pairs) {
     const en = pair.en?.trim() ?? '';
     if (en !== '') {
+      // 值与上次保存一致 → 视为未改动，保持原标记（不重复判为人工填写）
+      if (pair.prevEn !== undefined && en === (pair.prevEn?.trim() ?? '')) {
+        enByKey.set(pair.key, en);
+        continue;
+      }
       marks = unmarkMachineFields(marks, [pair.key]);
       enByKey.set(pair.key, en);
       continue;
