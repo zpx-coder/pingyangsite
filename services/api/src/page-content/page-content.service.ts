@@ -136,6 +136,10 @@ export class PageContentService {
         return null;
       }
       const value = parsed as { key: string; config: unknown; updatedAt: string };
+      // config 必须为对象，缓存被污染（如字符串）时视为未命中回源数据库
+      if (typeof value.config !== 'object' || value.config === null) {
+        return null;
+      }
       return { key, config: value.config as Record<string, unknown>, updatedAt: new Date(value.updatedAt) };
     } catch {
       return null;
@@ -246,6 +250,10 @@ export class PageContentService {
       this.translation,
     );
     const result: Record<string, unknown> = { ...config };
+    // 轮播图元素浅拷贝：applyPairs 回写英文译文时不修改调用方传入的 config 对象
+    if (key === 'home_banner' && Array.isArray(config.images)) {
+      result.images = (config.images as BannerImage[]).map((image) => ({ ...image }));
+    }
     this.applyPairs(key, result, enByKey);
 
     // 删除轮播图后清理残留标记（避免旧图标记永远存在）

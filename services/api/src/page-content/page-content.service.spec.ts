@@ -139,6 +139,21 @@ describe('PageContentService 缓存策略', () => {
     expect(prisma.pageContent.findUnique).toHaveBeenCalledTimes(2);
   });
 
+  it('缓存 config 被污染为字符串 → 视为未命中回源数据库', async () => {
+    const { service, prisma, redis } = makeService();
+    (redis.get as jest.Mock).mockResolvedValueOnce(
+      JSON.stringify({ key: 'home_about', config: 'not-an-object', updatedAt: DATE.toISOString() }),
+    );
+    (prisma.pageContent.findUnique as jest.Mock).mockResolvedValue({
+      key: 'home_about',
+      config: '{"titleZh":"回源"}',
+      updatedAt: DATE,
+    });
+    const result = await service.get('home_about');
+    expect(result.config).toEqual({ titleZh: '回源' });
+    expect(prisma.pageContent.findUnique).toHaveBeenCalled();
+  });
+
   it('Redis 读取异常 → 降级直读数据库；写入异常 → 不阻塞读取', async () => {
     const { service, prisma, redis } = makeService();
     (redis.get as jest.Mock).mockRejectedValueOnce(new Error('redis down'));
@@ -299,6 +314,17 @@ describe('PageContentService.save 合并与联动', () => {
     await service.save('home_banner', { images: [{ image: 'a.jpg', titleZh: '图一', titleEn: 'One' }] });
     const config = savedConfig(prisma);
     expect(config.machineFields).toBe('["b0TitleEn"]');
+    expect((config.images as { titleEn: string }[])[0].titleEn).toBe('One');
+  });
+
+  it('home_banner：回写译文不修改调用方传入的 config 对象（无隐性副作用）', async () => {
+    const { service, prisma } = makeService({ 图一: 'One' });
+    const submitted = { images: [{ image: 'a.jpg', titleZh: '图一' }] };
+    await service.save('home_banner', submitted);
+    // 调用方对象保持原样：titleEn 未被回写
+    expect(submitted.images[0]).not.toHaveProperty('titleEn');
+    // 落库 config 已含翻译后的 titleEn
+    const config = savedConfig(prisma);
     expect((config.images as { titleEn: string }[])[0].titleEn).toBe('One');
   });
 
