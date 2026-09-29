@@ -294,15 +294,104 @@ describe('NewsService 官网公开读取', () => {
     });
   });
 
-  it('publicDetail：可见即返回，不可见 → 404', async () => {
+  it('publicDetail：可见即返回（附 prev/next 空），不可见 → 404', async () => {
     const { service, prisma } = makeService({});
     (prisma.news.findFirst as jest.Mock).mockResolvedValueOnce(EXISTING);
-    await expect(service.publicDetail(1)).resolves.toEqual(EXISTING);
+    // 邻位查询均无结果
+    (prisma.news.findFirst as jest.Mock).mockResolvedValueOnce(null);
+    (prisma.news.findFirst as jest.Mock).mockResolvedValueOnce(null);
+    await expect(service.publicDetail(1)).resolves.toEqual({ ...EXISTING, prev: null, next: null });
     expect(prisma.news.findFirst).toHaveBeenCalledWith({
       where: { id: 1, status: 1, deletedAt: null, publishTime: { lte: expect.any(Date) } },
     });
 
     (prisma.news.findFirst as jest.Mock).mockResolvedValueOnce(null);
     await expect(service.publicDetail(2)).rejects.toThrow(new NotFoundException('新闻不存在'));
+  });
+
+  it('publicDetail：上一篇/下一篇按 置顶→发布时间→id 列表序取最近邻位', async () => {
+    const { service, prisma } = makeService({});
+    const prev = { id: 5, titleZh: '上一篇', titleEn: 'Prev' };
+    const next = { id: 3, titleZh: '下一篇', titleEn: 'Next' };
+    (prisma.news.findFirst as jest.Mock).mockResolvedValueOnce(EXISTING);
+    (prisma.news.findFirst as jest.Mock).mockResolvedValueOnce(prev);
+    (prisma.news.findFirst as jest.Mock).mockResolvedValueOnce(next);
+    const result = await service.publicDetail(1);
+    expect(result).toEqual({ ...EXISTING, prev, next });
+
+    // 当前非置顶 → 上一篇候选含「置顶组」，取最近前驱（列表序正序第一条）
+    expect(prisma.news.findFirst).toHaveBeenNthCalledWith(2, {
+      where: {
+        AND: [
+          { status: 1, deletedAt: null, publishTime: { lte: expect.any(Date) } },
+          {
+            OR: [
+              { isTop: false, publishTime: { gt: EXISTING.publishTime } },
+              { isTop: false, publishTime: EXISTING.publishTime, id: { gt: 1 } },
+              { isTop: true },
+            ],
+          },
+        ],
+      },
+      orderBy: [{ isTop: 'asc' }, { publishTime: 'asc' }, { id: 'asc' }],
+      select: { id: true, titleZh: true, titleEn: true },
+    });
+    // 后继取列表序倒序第一条
+    expect(prisma.news.findFirst).toHaveBeenNthCalledWith(3, {
+      where: {
+        AND: [
+          { status: 1, deletedAt: null, publishTime: { lte: expect.any(Date) } },
+          {
+            OR: [
+              { isTop: false, publishTime: { lt: EXISTING.publishTime } },
+              { isTop: false, publishTime: EXISTING.publishTime, id: { lt: 1 } },
+            ],
+          },
+        ],
+      },
+      orderBy: [{ isTop: 'desc' }, { publishTime: 'desc' }, { id: 'desc' }],
+      select: { id: true, titleZh: true, titleEn: true },
+    });
+  });
+
+  it('publicDetail：当前置顶 → 下一篇候选含「非置顶组」', async () => {
+    const { service, prisma } = makeService({});
+    const topNews = { ...EXISTING, isTop: true, publishTime: new Date('2026-02-01T00:00:00.000Z') };
+    (prisma.news.findFirst as jest.Mock).mockResolvedValueOnce(topNews);
+    (prisma.news.findFirst as jest.Mock).mockResolvedValueOnce(null);
+    (prisma.news.findFirst as jest.Mock).mockResolvedValueOnce({ id: 7, titleZh: '下', titleEn: 'N' });
+    const result = await service.publicDetail(1);
+    expect(result.next).toEqual({ id: 7, titleZh: '下', titleEn: 'N' });
+    expect(prisma.news.findFirst).toHaveBeenNthCalledWith(2, {
+      where: {
+        AND: [
+          { status: 1, deletedAt: null, publishTime: { lte: expect.any(Date) } },
+          {
+            OR: [
+              { isTop: true, publishTime: { gt: topNews.publishTime } },
+              { isTop: true, publishTime: topNews.publishTime, id: { gt: 1 } },
+            ],
+          },
+        ],
+      },
+      orderBy: [{ isTop: 'asc' }, { publishTime: 'asc' }, { id: 'asc' }],
+      select: { id: true, titleZh: true, titleEn: true },
+    });
+    expect(prisma.news.findFirst).toHaveBeenNthCalledWith(3, {
+      where: {
+        AND: [
+          { status: 1, deletedAt: null, publishTime: { lte: expect.any(Date) } },
+          {
+            OR: [
+              { isTop: true, publishTime: { lt: topNews.publishTime } },
+              { isTop: true, publishTime: topNews.publishTime, id: { lt: 1 } },
+              { isTop: false },
+            ],
+          },
+        ],
+      },
+      orderBy: [{ isTop: 'desc' }, { publishTime: 'desc' }, { id: 'desc' }],
+      select: { id: true, titleZh: true, titleEn: true },
+    });
   });
 });

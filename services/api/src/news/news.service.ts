@@ -4,6 +4,7 @@
 //     无需定时任务，到达时间自然可见）；
 //   - 双语联动与机器翻译标记走 translate-fields 公共工具。
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { TranslationService } from '../translation/translation.service';
 import { translateFields } from '../translation/translate-fields.util';
@@ -180,7 +181,7 @@ export class NewsService {
     });
   }
 
-  /** 新闻详情页（PRD §6.7）：未发布/未到发布时间/已删除均 404 */
+  /** 新闻详情页（PRD §6.7）：未发布/未到发布时间/已删除均 404，附上一篇/下一篇（仅 id 与双语标题） */
   async publicDetail(id: number) {
     const news = await this.prisma.news.findFirst({
       where: { id, status: 1, deletedAt: null, publishTime: { lte: new Date() } },
@@ -188,7 +189,46 @@ export class NewsService {
     if (!news) {
       throw new NotFoundException('新闻不存在');
     }
-    return news;
+    // 可见条件含 publishTime ≤ now（SQL 中 NULL 不满足），此处仅为类型收窄与防御
+    const publishTime = news.publishTime;
+    if (!publishTime) {
+      throw new NotFoundException('新闻不存在');
+    }
+
+    // 列表序：置顶优先 → 发布时间倒序 → id 倒序。上一篇 = 列表中紧邻其前的项，下一篇 = 紧邻其后的项。
+    const visible = { status: 1, deletedAt: null, publishTime: { lte: new Date() } };
+    const prevCond: Prisma.NewsWhereInput[] = [
+      { isTop: news.isTop, publishTime: { gt: publishTime } },
+      { isTop: news.isTop, publishTime, id: { gt: news.id } },
+    ];
+    if (!news.isTop) {
+      prevCond.push({ isTop: true });
+    }
+    const nextCond: Prisma.NewsWhereInput[] = [
+      { isTop: news.isTop, publishTime: { lt: publishTime } },
+      { isTop: news.isTop, publishTime, id: { lt: news.id } },
+    ];
+    if (news.isTop) {
+      nextCond.push({ isTop: false });
+    }
+    const NEIGHBOR_SELECT = { select: { id: true, titleZh: true, titleEn: true } } as const;
+
+    const [prev, next] = await Promise.all([
+      this.prisma.news.findFirst({
+        where: { AND: [visible, { OR: prevCond }] },
+        // 前驱中取列表序最后一个（紧邻当前）：列表序降序即列表键升序取第一条
+        orderBy: [{ isTop: 'asc' }, { publishTime: 'asc' }, { id: 'asc' }],
+        ...NEIGHBOR_SELECT,
+      }),
+      this.prisma.news.findFirst({
+        where: { AND: [visible, { OR: nextCond }] },
+        // 后继中取距当前最近者：按列表序倒序取第一条
+        orderBy: [{ isTop: 'desc' }, { publishTime: 'desc' }, { id: 'desc' }],
+        ...NEIGHBOR_SELECT,
+      }),
+    ]);
+
+    return { ...news, prev, next };
   }
 
   /** 双语联动 */
