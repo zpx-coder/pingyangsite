@@ -6,7 +6,9 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { TranslationService } from '../translation/translation.service';
-import { markMachineFields, unmarkMachineFields } from '../translation/machine-fields.util';
+import { markMachineFields } from '../translation/machine-fields.util';
+import { translateFields } from '../translation/translate-fields.util';
+import type { BilingualFieldPair } from '../translation/translate-fields.util';
 import type { CreateCategoryDto } from './dto/create-category.dto';
 import type { UpdateCategoryDto } from './dto/update-category.dto';
 import type { QueryCategoryDto } from './dto/query-category.dto';
@@ -77,20 +79,21 @@ export class CategoryService {
   }
 
   async create(dto: CreateCategoryDto) {
-    const { machineFields, nameEn, introEn } = await this.fillEnglish({
-      nameZh: dto.nameZh,
-      nameEn: dto.nameEn,
-      introZh: dto.introZh,
-      introEn: dto.introEn,
-      machineFields: null,
-    });
+    const { machineFields, enByKey } = await translateFields(
+      [
+        { key: 'nameEn', zh: dto.nameZh, en: dto.nameEn },
+        { key: 'introEn', zh: dto.introZh, en: dto.introEn },
+      ],
+      null,
+      this.translation,
+    );
     return this.prisma.category.create({
       data: {
         nameZh: dto.nameZh,
-        nameEn,
+        nameEn: enByKey.get('nameEn') ?? '',
         iconUrl: dto.iconUrl,
         introZh: dto.introZh,
-        introEn,
+        introEn: enByKey.get('introEn'),
         sort: dto.sort ?? 0,
         status: dto.status ?? 1,
         machineFields,
@@ -100,24 +103,32 @@ export class CategoryService {
 
   async update(id: number, dto: UpdateCategoryDto) {
     const existing = await this.findOrThrow(id);
-    const merged = await this.fillEnglish({
-      nameZh: dto.nameZh ?? existing.nameZh,
-      nameEn: dto.nameEn ?? existing.nameEn,
-      introZh: dto.introZh ?? existing.introZh ?? null,
-      introEn: dto.introEn ?? existing.introEn ?? null,
-      machineFields: existing.machineFields,
-    });
+    // 仅对实际改动过的双语字段做联动：未触碰的字段保留原值与原机器翻译标记，
+    // 避免「只改排序却把 nameEn 误判为人工填写而清除标记」。
+    // 英文未显式提交时按留空处理：中文改动会自动重译并打标记，不沿用旧英文。
+    const pairs: BilingualFieldPair[] = [];
+    if (dto.nameZh !== undefined || dto.nameEn !== undefined) {
+      pairs.push({ key: 'nameEn', zh: dto.nameZh ?? existing.nameZh, en: dto.nameEn ?? null });
+    }
+    if (dto.introZh !== undefined || dto.introEn !== undefined) {
+      pairs.push({
+        key: 'introEn',
+        zh: dto.introZh ?? existing.introZh ?? null,
+        en: dto.introEn ?? null,
+      });
+    }
+    const { machineFields, enByKey } = await translateFields(pairs, existing.machineFields, this.translation);
     return this.prisma.category.update({
       where: { id },
       data: {
         nameZh: dto.nameZh ?? existing.nameZh,
-        nameEn: merged.nameEn,
+        nameEn: enByKey.get('nameEn') ?? existing.nameEn,
         iconUrl: dto.iconUrl ?? existing.iconUrl,
         introZh: dto.introZh ?? existing.introZh,
-        introEn: merged.introEn,
+        introEn: enByKey.get('introEn') ?? existing.introEn,
         sort: dto.sort ?? existing.sort,
         status: dto.status ?? existing.status,
-        machineFields: merged.machineFields,
+        machineFields,
       },
     });
   }
@@ -184,45 +195,6 @@ export class CategoryService {
         sort: true,
       },
     });
-  }
-
-  /**
-   * 双语联动（方案 §5.3）：
-   *   英文字段非空视为人工校对 → 清除该字段机器翻译标记；
-   *   英文字段为空且中文非空 → 自动翻译并打标记；翻译失败保持为空（不阻塞保存）。
-   */
-  private async fillEnglish(input: {
-    nameZh: string;
-    nameEn: string | null | undefined;
-    introZh: string | null | undefined;
-    introEn: string | null | undefined;
-    machineFields: string | null | undefined;
-  }): Promise<{ machineFields: string | null; nameEn: string; introEn: string | null }> {
-    let machineFields: string | null = input.machineFields ?? null;
-
-    let nameEn = input.nameEn?.trim() ?? '';
-    if (nameEn !== '') {
-      machineFields = unmarkMachineFields(machineFields, ['nameEn']);
-    } else if (input.nameZh.trim() !== '') {
-      const translated = await this.translation.translateSafe([input.nameZh], 'zh', 'en');
-      if (translated?.[0]) {
-        nameEn = translated[0];
-        machineFields = markMachineFields(machineFields, ['nameEn']);
-      }
-    }
-
-    let introEn = input.introEn?.trim() ?? '';
-    if (introEn !== '') {
-      machineFields = unmarkMachineFields(machineFields, ['introEn']);
-    } else if (input.introZh?.trim()) {
-      const translated = await this.translation.translateSafe([input.introZh], 'zh', 'en');
-      if (translated?.[0]) {
-        introEn = translated[0];
-        machineFields = markMachineFields(machineFields, ['introEn']);
-      }
-    }
-
-    return { machineFields, nameEn, introEn: introEn === '' ? null : introEn };
   }
 
   private buildWhere(query: QueryCategoryDto) {
