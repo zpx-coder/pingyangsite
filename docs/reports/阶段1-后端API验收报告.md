@@ -41,21 +41,21 @@
 | news.update 编辑回传未改动的机器翻译英文被误判「人工校对」清标记（§5.3 原值保留语义缺失） | 构造翻译对时补传 prevEn，与页面内容模块对齐 | fix(news) 8c963f9 |
 | inquiry 限流 expire 静默失败时计数 key 无 TTL，该 IP 会被永久限流 | expire 失败时删除 key 重置计数（降级放行方向） | fix(inquiry) 674cdb9 |
 
-## 四、遗留问题（测试过程中发现，共 9 条，已记录待决策）
+## 四、遗留问题（测试过程中发现，共 9 条）
 
-| # | 位置 | 问题 | 风险 |
-| --- | --- | --- | --- |
-| 1 | product.service create | `companyId !== undefined` 校验语义与 update 的 truthy 判断不一致（DTO 已拦截，仅直连服务可触发） | 低 |
-| 2 | product.service update | `if (dto.companyId)` 对 0 跳过校验（DTO @Min(1) 已拦截） | 低 |
-| 3 | product.service publicDetail | 冗余 select logoUrl（无害） | 无 |
-| 4 | category.service translate | 全部翻译失败时 machineFields 重序列化为 '[]'（行为可接受） | 无 |
-| 5 | company/product update | 图片字段未传时冗余 parse→stringify 往返（安全） | 无 |
-| 6 | page-content readCache | 只校验 key 不校验 config 为对象，缓存被污染为字符串时原样返回 | 低 |
-| 7 | page-content applyPairs | home_banner 原地修改传入 config（shallow copy 隐性副作用） | 低 |
-| 8 | oss.driver publicUrl | cdnDomain 配置值若带 scheme 会拼出双 scheme URL（配置契约建议在 configuration 归一化） | 低 |
-| 9 | upload.controller | `req.session.adminPhone` 未用可选链（生产有守卫前置兜底，不可达） | 无 |
+**2026-09-29 负责人决策：优先修复 → 已修复 4 条**（#1/#2 fix(product) 7628d60，#6/#7 fix(page-content) 26a05c3，均含回归测试，全量 494 用例通过）。
 
-> #1/#2 建议在阶段 3（后台前端）开始前随一次 fix 小任务统一语义；#6/#7/#8 建议下个迭代处理；其余可搁置。
+| # | 位置 | 问题 | 风险 | 状态 |
+| --- | --- | --- | --- | --- |
+| 1 | product.service create | companyId 校验语义与 update 不一致（显式 null 误查企业） | 低 | ✅ 已修复（统一为 null/undefined 免校验、0 拒绝） |
+| 2 | product.service update | truthy 判断对 0 跳过校验 | 低 | ✅ 已修复（并入 #1 统一语义） |
+| 3 | product.service publicDetail | 冗余 select logoUrl（无害） | 无 | 搁置 |
+| 4 | category.service translate | 全部翻译失败时 machineFields 重序列化为 '[]'（行为可接受） | 无 | 搁置 |
+| 5 | company/product update | 图片字段未传时冗余 parse→stringify 往返（安全） | 无 | 搁置 |
+| 6 | page-content readCache | 缓存被污染为字符串时原样返回 | 低 | ✅ 已修复（config 非对象视为未命中回源） |
+| 7 | page-content applyPairs | home_banner 原地修改调用方 config（隐性副作用） | 低 | ✅ 已修复（images 元素浅拷贝后回写） |
+| 8 | oss.driver publicUrl | cdnDomain 配置值若带 scheme 会拼出双 scheme URL | 低 | 搁置（上线配置时在 configuration 归一化即可规避） |
+| 9 | upload.controller | `req.session.adminPhone` 未用可选链（守卫前置兜底，不可达） | 无 | 搁置 |
 
 ## 五、技术决策记录（按负责人要求入报告）
 
