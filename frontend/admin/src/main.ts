@@ -11,11 +11,16 @@ import './styles/admin.css';
 
 const app = createApp(App);
 
-// 会话失效（40100）：清空本地状态并回登录页（任务 3.3 的会话过期跳转即由该链路承载）
+// 会话失效（40100，页面内业务请求触发）：清空本地状态并回登录页，带 expired 标记与回跳地址；
+// 守卫探活请求的 401 不走此链路（skipAuthHandler），由守卫统一跳转，避免双重导航竞争
 setUnauthorizedHandler(() => {
   clearSession();
-  if (router.currentRoute.value.name !== 'login') {
-    void router.push({ name: 'login', query: { expired: '1' } });
+  const current = router.currentRoute.value;
+  if (current.name !== 'login') {
+    void router.push({
+      name: 'login',
+      query: { expired: '1', ...(current.fullPath !== '/' ? { redirect: current.fullPath } : {}) },
+    });
   }
 });
 

@@ -29,13 +29,19 @@ export function setUnauthorizedHandler(handler: () => void): void {
   onUnauthorized = handler;
 }
 
+// 部分探测类请求（如路由守卫 /session 探活）自行处理 401，抑制全局处理器
+// （否则守卫跳转与处理器跳转会竞争两次导航，redirect/expired 参数互相覆盖）
+export interface RequestConfig extends AxiosRequestConfig {
+  skipAuthHandler?: boolean;
+}
+
 http.interceptors.response.use(
   (response) => {
     const body = response.data as Envelope<unknown>;
     if (body && typeof body === 'object' && 'code' in body) {
       if (body.code === 0) return body.data;
       if (body.code === 40100) {
-        onUnauthorized?.();
+        if (!(response.config as RequestConfig).skipAuthHandler) onUnauthorized?.();
         throw new ApiError(body.code, body.message || '登录已过期，请重新登录');
       }
       throw new ApiError(body.code, body.message || '请求失败');
@@ -46,7 +52,7 @@ http.interceptors.response.use(
     const body = error.response?.data;
     if (body && typeof body === 'object' && 'code' in body) {
       if (body.code === 40100) {
-        onUnauthorized?.();
+        if (!(error.config as RequestConfig | undefined)?.skipAuthHandler) onUnauthorized?.();
         throw new ApiError(body.code, body.message || '登录已过期，请重新登录');
       }
       throw new ApiError(body.code, body.message || '请求失败');
@@ -56,7 +62,7 @@ http.interceptors.response.use(
 );
 
 /** 请求并解包信封（response 拦截器已返回 data，此处提供显式类型） */
-export function request<T>(config: AxiosRequestConfig): Promise<T> {
+export function request<T>(config: RequestConfig): Promise<T> {
   return http.request(config) as Promise<T>;
 }
 

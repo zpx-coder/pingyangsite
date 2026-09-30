@@ -89,9 +89,13 @@ export const router = createRouter({
 router.beforeEach(async (to) => {
   // 登录页公开访问；其余路由校验会话（并发守卫共享同一 /session 请求）
   if (to.meta.public) return true;
-  const ok = await ensureSession();
-  if (!ok) {
-    return { name: 'login', query: to.fullPath !== '/' ? { redirect: to.fullPath } : {} };
+  const check = await ensureSession();
+  if (!check.ok) {
+    // 会话过期（40100）显式带 expired 标记 → 登录页提示「会话已过期」（PRD §7.0）
+    const query: Record<string, string> = {};
+    if (check.expired) query.expired = '1';
+    if (to.fullPath !== '/') query.redirect = to.fullPath;
+    return { name: 'login', query };
   }
   return true;
 });

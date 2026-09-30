@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // 登录页（任务 3.1 骨架版 / 3.3 完善）：与原型 adminLogin 一致
 // 手机号 + 密码 → 服务端会话；成功后默认进入询盘管理（PRD §7.0）；失败展示后端消息（含锁定剩余时间）
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { login } from '@/api/auth';
@@ -13,6 +13,13 @@ const router = useRouter();
 
 const form = reactive({ phone: '', password: '' });
 const submitting = ref(false);
+
+// 会话过期跳转（PRD §7.0：8 小时过期跳转登录页）——401 链路带 expired=1 回跳，此处提示
+onMounted(() => {
+  if (route.query.expired === '1') {
+    ElMessage.warning('会话已过期，请重新登录');
+  }
+});
 
 async function onSubmit() {
   if (!/^1[3-9]\d{9}$/.test(form.phone)) {
