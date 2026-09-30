@@ -83,12 +83,16 @@ export class CompanyService {
       [
         { key: 'nameEn', zh: dto.nameZh, en: dto.nameEn },
         { key: 'introEn', zh: dto.introZh, en: dto.introEn },
+        { key: 'addressEn', zh: dto.address, en: dto.addressEn },
+        { key: 'contactNameEn', zh: dto.contactName, en: dto.contactNameEn },
       ],
       {
         nameZh: dto.nameZh,
         introZh: dto.introZh,
         nameEn: dto.nameEn ?? null,
         introEn: dto.introEn ?? null,
+        addressEn: dto.addressEn ?? null,
+        contactNameEn: dto.contactNameEn ?? null,
         machineFields: null,
       },
       {
@@ -137,6 +141,16 @@ export class CompanyService {
         en: dto.introEn ?? null,
       });
     }
+    if (dto.address !== undefined || dto.addressEn !== undefined) {
+      pairs.push({ key: 'addressEn', zh: dto.address ?? existing.address ?? '', en: dto.addressEn ?? null });
+    }
+    if (dto.contactName !== undefined || dto.contactNameEn !== undefined) {
+      pairs.push({
+        key: 'contactNameEn',
+        zh: dto.contactName ?? existing.contactName ?? '',
+        en: dto.contactNameEn ?? null,
+      });
+    }
     const data = await this.buildData(
       pairs,
       {
@@ -144,6 +158,8 @@ export class CompanyService {
         introZh: dto.introZh ?? existing.introZh ?? '',
         nameEn: existing.nameEn,
         introEn: existing.introEn,
+        addressEn: existing.addressEn,
+        contactNameEn: existing.contactNameEn,
         machineFields: existing.machineFields,
       },
       {
@@ -242,6 +258,8 @@ export class CompanyService {
       introZh: string;
       nameEn: string | null | undefined;
       introEn: string | null | undefined;
+      addressEn: string | null | undefined;
+      contactNameEn: string | null | undefined;
       machineFields: string | null;
     },
     rest: CompanyRestFields,
@@ -253,6 +271,8 @@ export class CompanyService {
       introZh: current.introZh,
       nameEn: enByKey.get('nameEn') ?? current.nameEn ?? '',
       introEn: enByKey.get('introEn') ?? current.introEn ?? null,
+      addressEn: enByKey.get('addressEn') ?? current.addressEn ?? null,
+      contactNameEn: enByKey.get('contactNameEn') ?? current.contactNameEn ?? null,
       machineFields: marks,
       honorImages: JSON.stringify(rest.honorImages),
     };
@@ -320,7 +340,9 @@ export class CompanyService {
       foundedYear: row.foundedYear,
       scale: row.scale,
       address: row.address,
+      addressEn: row.addressEn,
       contactName: row.contactName,
+      contactNameEn: row.contactNameEn,
       phone: row.phone,
       email: row.email,
       website: row.website,

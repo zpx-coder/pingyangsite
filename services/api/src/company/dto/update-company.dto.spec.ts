@@ -32,6 +32,8 @@ describe('UpdateCompanyDto', () => {
     expect(await errorMessages({ logoUrl: 'x'.repeat(256) })).toContain('Logo 地址过长');
     expect(await errorMessages({ introZh: 'x'.repeat(10001) })).toContain('企业简介过长');
     expect(await errorMessages({ introEn: 'x'.repeat(10001) })).toContain('英文简介过长');
+    expect(await errorMessages({ addressEn: 'x'.repeat(501) })).toContain('英文地址不能超过 500 字');
+    expect(await errorMessages({ contactNameEn: 'x'.repeat(101) })).toContain('英文联系人不能超过 100 字');
   });
 
   it('类目数组校验', async () => {

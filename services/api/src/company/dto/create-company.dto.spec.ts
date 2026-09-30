@@ -57,10 +57,18 @@ describe('CreateCompanyDto', () => {
   it('文本类字段长度限制', async () => {
     expect(await errorMessages({ ...VALID, scale: 'x'.repeat(101) })).toContain('员工规模不能超过 100 字');
     expect(await errorMessages({ ...VALID, address: 'x'.repeat(501) })).toContain('地址不能超过 500 字');
+    expect(await errorMessages({ ...VALID, addressEn: 'x'.repeat(501) })).toContain('英文地址不能超过 500 字');
     expect(await errorMessages({ ...VALID, contactName: 'x'.repeat(101) })).toContain(
       '联系人不能超过 100 字',
     );
+    expect(await errorMessages({ ...VALID, contactNameEn: 'x'.repeat(101) })).toContain(
+      '英文联系人不能超过 100 字',
+    );
     expect(await errorMessages({ ...VALID, phone: 'x'.repeat(51) })).toContain('联系电话不能超过 50 字');
+  });
+
+  it('英文地址/联系人合法值通过', async () => {
+    expect(await errorMessages({ ...VALID, addressEn: 'Pingyang County, Wenzhou', contactNameEn: 'Zhang San' })).toEqual([]);
   });
 
   it('邮箱格式与长度', async () => {

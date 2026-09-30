@@ -53,7 +53,9 @@ const COMPANY_ROW = {
   foundedYear: 2010,
   scale: '100人',
   address: '平阳县',
+  addressEn: 'Pingyang County',
   contactName: '张三',
+  contactNameEn: 'Zhang San',
   phone: '13800000000',
   email: 'a@example.com',
   website: 'https://a.example.com',
@@ -247,6 +249,31 @@ describe('CompanyService.update', () => {
     expect(prisma.company.update).toHaveBeenCalledWith({
       where: { id: 1 },
       data: expect.objectContaining({ introZh: '新简介', introEn: 'New Intro', machineFields: '["introEn"]' }),
+    });
+  });
+
+  it('改地址中文未传英文 → 地址自动重译并打标（遗留 #2 双语联动）', async () => {
+    const { service, prisma } = makeService({ 新地址: 'New Address' });
+    (prisma.company.findFirst as jest.Mock).mockResolvedValue(COMPANY_ROW);
+    await service.update(1, { address: '新地址' });
+    expect(prisma.company.update).toHaveBeenCalledWith({
+      where: { id: 1 },
+      data: expect.objectContaining({
+        address: '新地址',
+        addressEn: 'New Address',
+        contactNameEn: 'Zhang San',
+        machineFields: '["addressEn"]',
+      }),
+    });
+  });
+
+  it('只改 scale：地址/联系人英文保留原值', async () => {
+    const { service, prisma } = makeService();
+    (prisma.company.findFirst as jest.Mock).mockResolvedValue(COMPANY_ROW);
+    await service.update(1, { scale: '200人' });
+    expect(prisma.company.update).toHaveBeenCalledWith({
+      where: { id: 1 },
+      data: expect.objectContaining({ addressEn: 'Pingyang County', contactNameEn: 'Zhang San' }),
     });
   });
 

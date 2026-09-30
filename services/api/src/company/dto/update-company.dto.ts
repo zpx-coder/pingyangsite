@@ -59,10 +59,20 @@ export class UpdateCompanyDto {
   @MaxLength(500, { message: '地址不能超过 500 字' })
   address?: string;
 
+  @ApiPropertyOptional({ description: '企业英文地址（留空自动翻译）', example: 'Pingyang County, Wenzhou, Zhejiang' })
+  @IsOptional()
+  @MaxLength(500, { message: '英文地址不能超过 500 字' })
+  addressEn?: string;
+
   @ApiPropertyOptional({ description: '联系人姓名', example: '张三' })
   @IsOptional()
   @MaxLength(100, { message: '联系人不能超过 100 字' })
   contactName?: string;
+
+  @ApiPropertyOptional({ description: '联系人英文姓名（留空自动翻译）', example: 'Zhang San' })
+  @IsOptional()
+  @MaxLength(100, { message: '英文联系人不能超过 100 字' })
+  contactNameEn?: string;
 
   @ApiPropertyOptional({ description: '联系电话', example: '0577-63666666' })
   @IsOptional()
