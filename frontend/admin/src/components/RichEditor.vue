@@ -5,7 +5,7 @@
 // 图片/视频经 /admin/upload 接口入库（OSS/CDN，本地驱动为 /uploads 静态目录）
 import { onBeforeUnmount, shallowRef } from 'vue';
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue';
-import type { IDomEditor } from '@wangeditor/editor';
+import { DomEditor, type IDomEditor } from '@wangeditor/editor';
 import { request } from '@/api/http';
 import '@wangeditor/editor/dist/css/style.css';
 
@@ -98,7 +98,33 @@ function handleCreated(editor: IDomEditor): void {
 }
 
 onBeforeUnmount(() => {
-  editorRef.value?.destroy();
+  const editor = editorRef.value;
+  editorRef.value = null;
+  if (!editor) return;
+  // TODO(2026-09-30): wangEditor 5.1.23 卸载时序缺陷 workaround，上游未修复，升级后应移除。
+  // 缺陷：TextArea 在 document 上注册 selectionchange 监听（lodash.throttle 包裹，wait=100，含尾随调用），
+  // 尾随调用与 change 事件监听（changeViewState 等）都会读取 editorInstance getter；
+  // editor.destroy() 先删除实例槽位、后触发 destroyed 事件摘除监听，期间若任何 selectionchange 被派发，
+  // 其尾随调用将在槽位删除后命中 getter，抛 "Can not get editor instance" 未捕获异常
+  // （快速「编辑→保存→跳转」路径必现，双编辑器各抛一次）。
+  // 修复：销毁前消毒——①blur + 清空选区，让挂起的尾随调用在编辑器存活期内执行完；
+  // ②摘除 document 上的 selectionchange 监听，阻断销毁窗口期内的新调度；
+  // ③延迟销毁（> 100ms 尾随窗口），销毁时刻已无任何挂起回调。
+  try {
+    editor.blur();
+    document.getSelection()?.removeAllRanges();
+  } catch {
+    // 卸载阶段编辑器可能已处于异常状态，忽略
+  }
+  try {
+    const textarea = DomEditor.getTextarea(editor);
+    // onDOMSelectionChange 为 TextArea 私有成员（上游 .d.ts 未导出），此处以类型断言摘除监听
+    const listener = (textarea as unknown as { onDOMSelectionChange: EventListener }).onDOMSelectionChange;
+    document.removeEventListener('selectionchange', listener);
+  } catch {
+    // getTextarea 槽位异常时兜底：延迟销毁仍可规避绝大多数窗口
+  }
+  window.setTimeout(() => editor.destroy(), 500);
 });
 </script>
 
