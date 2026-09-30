@@ -17,4 +17,9 @@ export default defineConfig({
       '/uploads': { target: 'http://127.0.0.1:3001', changeOrigin: true },
     },
   },
+  // wangEditor 官方 Vue3 建议：排除预打包，避免 editor-for-vue 与 core 各持一份实例
+  // （否则报 TypeError: editor.on is not a function，工具栏/编辑区不渲染）
+  optimizeDeps: {
+    exclude: ['@wangeditor/editor', '@wangeditor/editor-for-vue'],
+  },
 });
