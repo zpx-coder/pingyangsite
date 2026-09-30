@@ -8,8 +8,10 @@ const props = withDefaults(
     page: number;
     pageSize: number;
     total: number;
+    /** 总数文案单位（原型各异：产品/企业「条」，类目「个类目」） */
+    unit?: string;
   }>(),
-  { page: 1, pageSize: 20, total: 0 },
+  { page: 1, pageSize: 20, total: 0, unit: '条' },
 );
 
 const emit = defineEmits<{ 'update:page': [page: number] }>();
@@ -40,7 +42,7 @@ function go(page: number): void {
 
 <template>
   <div class="pager-bar">
-    <span>共 {{ total }} 条</span>
+    <span>共 {{ total }} {{ unit }}</span>
     <div class="pagination" style="margin: 0">
       <span class="pg" :class="{ dis: page <= 1 }" @click="go(page - 1)">‹</span>
       <template v-for="(item, index) in pages" :key="index">

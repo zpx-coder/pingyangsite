@@ -21,8 +21,10 @@ const props = withDefaults(
     multiple?: boolean;
     /** 上传框提示文案 */
     tip?: string;
+    /** 上传框/预览格边长（px），默认 120；类目图标弹窗等紧凑场景传 80 */
+    size?: number;
   }>(),
-  { limit: 10, multiple: false, tip: '' },
+  { limit: 10, multiple: false, tip: '', size: 120 },
 );
 
 const model = defineModel<string | string[]>({ required: true });
@@ -81,13 +83,13 @@ function removeAt(index: number): void {
   <div class="upload-row">
     <!-- 已上传图预览 -->
     <template v-if="multiple">
-      <div v-for="(url, i) in (model as string[])" :key="url" class="img-cell">
+      <div v-for="(url, i) in (model as string[])" :key="url" class="img-cell" :style="{ width: size + 'px', height: size + 'px' }">
         <el-image :src="url" fit="cover" :preview-src-list="(model as string[])" :initial-index="i" />
         <span class="img-del" @click="removeAt(i)">×</span>
       </div>
     </template>
     <template v-else>
-      <div v-if="model && !Array.isArray(model)" class="img-cell">
+      <div v-if="model && !Array.isArray(model)" class="img-cell" :style="{ width: size + 'px', height: size + 'px' }">
         <el-image :src="model" fit="cover" :preview-src-list="[model]" />
         <span class="img-del" @click="model = ''">×</span>
       </div>
@@ -100,7 +102,7 @@ function removeAt(index: number): void {
       :http-request="onUpload"
       :disabled="uploading"
     >
-      <div class="upload-box" :class="{ wide: !multiple }" style="width: 120px; height: 120px">
+      <div class="upload-box" :class="{ wide: !multiple }" :style="{ width: size + 'px', height: size + 'px' }">
         <span class="ic">{{ uploading ? '⏳' : '＋' }}</span>
         {{ multiple ? '添加图片' : tip || '上传图片' }}
       </div>

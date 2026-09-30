@@ -10,7 +10,6 @@ import { listCompanies, removeCompany, updateCompany, type CompanyView } from '@
 import { listCategories } from '@/api/categories';
 import { notifyError } from '@/api/http';
 import { confirmDanger } from '@/utils/confirm';
-import { formatDateTime } from '@/utils/format';
 import StatusBadge from '@/components/StatusBadge.vue';
 import PaginationBar from '@/components/PaginationBar.vue';
 
