@@ -31,6 +31,7 @@ function makePrisma() {
     product: {
       count: jest.fn(async () => 0),
       findMany: jest.fn(async () => []),
+      groupBy: jest.fn(async () => []),
     },
     // create/update 以回调形式使用事务：mock 以共享客户端执行回调，断言落在各模型方法上
     $transaction: jest.fn(async (fn: (tx: unknown) => unknown) => fn({ company, companyCategory })),
@@ -70,21 +71,35 @@ const COMPANY_ROW = {
 };
 
 describe('CompanyService.list', () => {
-  it('默认分页并完成后台视图映射（honorImages 解析、类目标签扁平化）', async () => {
+  it('默认分页并完成后台视图映射（honorImages 解析、类目标签扁平化、产品数聚合）', async () => {
     const { service, prisma } = makeService();
     (prisma.company.findMany as jest.Mock).mockResolvedValue([COMPANY_ROW]);
     (prisma.company.count as jest.Mock).mockResolvedValue(3);
+    (prisma.product.groupBy as jest.Mock).mockResolvedValue([{ companyId: 1, _count: { _all: 6 } }]);
     const result = await service.list({});
     expect(result).toEqual(expect.objectContaining({ page: 1, pageSize: 20, total: 3 }));
     expect(result.list[0]).toMatchObject({
       id: 1,
       honorImages: ['h1.jpg', 'h2.jpg'],
       categories: [{ id: 10, nameZh: '类目1' }],
+      productCount: 6,
     });
     expect(result.list[0]).not.toHaveProperty('companyCategories');
     expect(prisma.company.findMany).toHaveBeenCalledWith(
       expect.objectContaining({ where: { deletedAt: null }, skip: 0, take: 20 }),
     );
+    expect(prisma.product.groupBy).toHaveBeenCalledWith({
+      by: ['companyId'],
+      where: { companyId: { in: [1] }, deletedAt: null },
+      _count: { _all: true },
+    });
+  });
+
+  it('产品数聚合：无关联产品补 0（列表页产品数列）', async () => {
+    const { service, prisma } = makeService();
+    (prisma.company.findMany as jest.Mock).mockResolvedValue([COMPANY_ROW]);
+    const result = await service.list({});
+    expect(result.list[0].productCount).toBe(0);
   });
 
   it('状态/类目/关键词组合筛选（关键词去空格）', async () => {

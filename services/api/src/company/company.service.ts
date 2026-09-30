@@ -65,8 +65,20 @@ export class CompanyService {
       }),
       this.prisma.company.count({ where }),
     ]);
+    // 列表页「产品数」列（原型 adminCompanies）：按页内企业一次聚合，避免循环查询（性能基线 §7）
+    const productCounts = await this.prisma.product.groupBy({
+      by: ['companyId'],
+      where: { companyId: { in: rows.map((row) => row.id) }, deletedAt: null },
+      _count: { _all: true },
+    });
+    const productMap = new Map(productCounts.map((item) => [item.companyId, item._count._all]));
 
-    return { page, pageSize, total, list: rows.map((row) => this.toView(row)) };
+    return {
+      page,
+      pageSize,
+      total,
+      list: rows.map((row) => ({ ...this.toView(row), productCount: productMap.get(row.id) ?? 0 })),
+    };
   }
 
   async detail(id: number) {

@@ -691,3 +691,42 @@ textarea.err {
   justify-content: flex-end;
   padding-top: 14px;
 }
+
+/* 类目多选芯片（原型 adminCompanyEdit .cat-chips）：任务 3.5 企业管理 */
+.cat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cat-chips .chipx {
+  border: 1px solid #d4dce4;
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--muted);
+  background: #fff;
+  font-weight: 600;
+  transition: 0.15s;
+  user-select: none;
+}
+.cat-chips .chipx.on {
+  background: #e8f0f8;
+  border-color: var(--blue);
+  color: var(--blue);
+}
+.cat-chips .chipx:hover {
+  border-color: var(--blue);
+}
+
+/* 类目多标签（企业管理列表「所属类目」列，PRD §7.2 多类目标签展示） */
+.cat-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 0 4px 4px 0;
+  border-radius: 4px;
+  background: #f0f5fa;
+  color: #3d556b;
+  font-size: 12px;
+  white-space: nowrap;
+}
