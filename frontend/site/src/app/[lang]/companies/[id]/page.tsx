@@ -69,10 +69,13 @@ export default async function CompanyDetailPage({
   const intro = pickLang(lang, company.introZh, company.introEn);
   const cover = company.coverUrl?.trim() || FALLBACK_COVER;
 
-  // 基本信息（PRD §6.5：成立年份/规模/地址/联系人/电话/邮箱/官网），仅展示有值的项
+  // 基本信息（PRD §6.5：成立年份/规模/地址/联系人/电话/邮箱/官网），仅展示有值的项；
+  // 地址/联系人按当前语言取双语值（遗留 #2：en 态不再展示中文值）
   const facts: { label: string; value: string; href?: string }[] = [];
-  if (company.address) facts.push({ label: t.company.address, value: company.address });
-  if (company.contactName) facts.push({ label: t.company.contactName, value: company.contactName });
+  const address = pickLang(lang, company.address, company.addressEn);
+  if (address) facts.push({ label: t.company.address, value: address });
+  const contactName = pickLang(lang, company.contactName, company.contactNameEn);
+  if (contactName) facts.push({ label: t.company.contactName, value: contactName });
   if (company.phone) facts.push({ label: t.company.phone, value: company.phone });
   if (company.email) facts.push({ label: t.company.email, value: company.email });
   if (company.website) {

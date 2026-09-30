@@ -191,7 +191,9 @@ export interface PublicCompany {
   foundedYear: number | null;
   scale: string | null;
   address: string | null;
+  addressEn: string | null;
   contactName: string | null;
+  contactNameEn: string | null;
   phone: string | null;
   email: string | null;
   website: string | null;
