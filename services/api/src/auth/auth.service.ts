@@ -69,7 +69,8 @@ export class AuthService {
     const user = await this.prisma.adminUser.findUnique({ where: { phone: currentPhone } });
     const passwordOk = await compare(dto.password, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
     if (!user || !passwordOk) {
-      throw new UnauthorizedException('当前密码错误');
+      // 业务校验错误用 400：401 会触发前端全局「会话已过期」处理器导致误强制登出（任务 3.10）
+      throw new BadRequestException('当前密码错误');
     }
     const newPhone = dto.newPhone.trim();
     const existing = await this.prisma.adminUser.findUnique({ where: { phone: newPhone } });
@@ -90,7 +91,8 @@ export class AuthService {
     const user = await this.prisma.adminUser.findUnique({ where: { phone } });
     const passwordOk = await compare(dto.currentPassword, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
     if (!user || !passwordOk) {
-      throw new UnauthorizedException('当前密码错误');
+      // 业务校验错误用 400：401 会触发前端全局「会话已过期」处理器导致误强制登出（任务 3.10）
+      throw new BadRequestException('当前密码错误');
     }
     await this.prisma.adminUser.update({
       where: { id: user.id },

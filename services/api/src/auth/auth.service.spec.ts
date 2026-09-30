@@ -1,7 +1,7 @@
 // 认证与账号管理服务单元测试（PRD §7.0，任务 1.1/1.11）
 // 服务层 mock 模式参照：Prisma 客户端 / Redis / 日志均以 jest.fn 注入，
 // 不依赖真实数据库与 Redis（测试可独立运行、无状态共享）。
-import { UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { hashSync } from 'bcryptjs';
 import type { Request } from 'express';
 import type { RedisClientType } from 'redis';
@@ -110,11 +110,11 @@ describe('AuthService.logout', () => {
 });
 
 describe('AuthService.changePhone', () => {
-  it('当前密码错误 → 401', async () => {
+  it('当前密码错误 → 400（业务校验错误，避免触发前端会话过期处理器）', async () => {
     const { service } = makeService();
     await expect(
       service.changePhone({ newPhone: '13912345678', password: 'WrongPass1' }, makeReq()),
-    ).rejects.toThrow(new UnauthorizedException('当前密码错误'));
+    ).rejects.toThrow(new BadRequestException('当前密码错误'));
   });
 
   it('手机号被占用 → 40000', async () => {
@@ -143,11 +143,11 @@ describe('AuthService.changePhone', () => {
 });
 
 describe('AuthService.changePassword', () => {
-  it('当前密码错误 → 401', async () => {
+  it('当前密码错误 → 400（业务校验错误，避免触发前端会话过期处理器）', async () => {
     const { service } = makeService();
     await expect(
       service.changePassword({ currentPassword: 'WrongPass1', newPassword: 'NewPass123' }, makeReq()),
-    ).rejects.toThrow(new UnauthorizedException('当前密码错误'));
+    ).rejects.toThrow(new BadRequestException('当前密码错误'));
   });
 
   it('成功：更新哈希、强制销毁会话、audit 留痕', async () => {
