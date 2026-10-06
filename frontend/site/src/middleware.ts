@@ -9,8 +9,10 @@ import type { NextRequest } from 'next/server';
 
 const API_BASE = process.env.API_BASE_URL ?? 'http://127.0.0.1:3001';
 const DETAIL_RE = /^\/(zh-CN|en)\/(products|companies|categories|news)\/(\d+)\/?$/;
-// 首段非法（非语言、非 _next/api、非带点号静态文件）即 404
-const INVALID_LANG_RE = /^\/(?!zh-CN|en)(?!_next)(?!api\b)[^/.]+(?=\/|$)/;
+// 首段非法（非语言、非 _next/api、非静态资源目录、非带点号静态文件）即 404。
+// img/uploads 为静态资源目录：文件点号在后续段（/img/logo.jpg），首段无点号，
+// 须显式豁免，否则全站图片被语言守卫误判 404
+const INVALID_LANG_RE = /^\/(?!zh-CN|en)(?!_next)(?!api\b)(?!img\b)(?!uploads\b)[^/.]+(?=\/|$)/;
 
 // 设计 404 页（内联样式，与 src/app/not-found.tsx 视觉一致；PRD §5.1）
 function notFoundHtml(lang: 'zh-CN' | 'en'): string {
