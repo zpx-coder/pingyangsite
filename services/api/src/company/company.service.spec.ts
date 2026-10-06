@@ -53,6 +53,7 @@ const COMPANY_ROW = {
   coverUrl: '/cover.png',
   foundedYear: 2010,
   scale: '100人',
+  scaleEn: '100 employees',
   address: '平阳县',
   addressEn: 'Pingyang County',
   contactName: '张三',
@@ -220,18 +221,19 @@ describe('CompanyService.create', () => {
 });
 
 describe('CompanyService.update', () => {
-  it('只改 scale：未触碰双语字段保留原值、翻译不触发', async () => {
-    const { service, prisma, translation } = makeService();
+  it('只改 scale：scale 已双语化——自动翻译 scaleEn 打标，其余双语字段保留原值', async () => {
+    const { service, prisma, translation } = makeService({ '200人': '200 people' });
     (prisma.company.findFirst as jest.Mock).mockResolvedValue(COMPANY_ROW);
     await service.update(1, { scale: '200人' });
-    expect(translation.translateSafe).not.toHaveBeenCalled();
+    expect(translation.translateSafe).toHaveBeenCalledWith(['200人'], 'zh', 'en');
     expect(prisma.company.update).toHaveBeenCalledWith({
       where: { id: 1 },
       data: expect.objectContaining({
         scale: '200人',
+        scaleEn: '200 people',
         nameEn: 'Company A',
         honorImages: '["h1.jpg","h2.jpg"]',
-        machineFields: null,
+        machineFields: '["scaleEn"]',
       }),
     });
     expect(prisma.companyCategory.deleteMany).not.toHaveBeenCalled();

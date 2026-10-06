@@ -190,6 +190,7 @@ export interface PublicCompany {
   coverUrl: string | null;
   foundedYear: number | null;
   scale: string | null;
+  scaleEn: string | null;
   address: string | null;
   addressEn: string | null;
   contactName: string | null;

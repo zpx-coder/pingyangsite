@@ -143,7 +143,7 @@ export default async function CompanyDetailPage({
             </div>
             <div style={{ textAlign: 'center', borderLeft: '1px solid var(--line)', paddingLeft: 30 }}>
               <div className="serif" style={{ fontSize: 26, fontWeight: 800, color: 'var(--deep)' }}>
-                {company.scale?.split(' ')[0] ?? '—'}
+                {pickLang(lang, company.scale, company.scaleEn)?.split(' ')[0] ?? '—'}
               </div>
               <div style={{ fontSize: 12, color: 'var(--muted)' }}>{t.company.scaleLabel}</div>
             </div>

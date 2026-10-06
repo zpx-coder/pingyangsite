@@ -9,6 +9,7 @@ export interface CompanyView {
   coverUrl: string | null;
   foundedYear: number | null;
   scale: string | null;
+  scaleEn: string | null;
   address: string | null;
   addressEn: string | null;
   contactName: string | null;
@@ -52,6 +53,7 @@ export interface CompanyPayload {
   categoryIds: number[];
   foundedYear?: number | null;
   scale?: string;
+  scaleEn?: string;
   address?: string;
   addressEn?: string;
   contactName?: string;

@@ -97,6 +97,7 @@ export class CompanyService {
         { key: 'introEn', zh: dto.introZh, en: dto.introEn },
         { key: 'addressEn', zh: dto.address, en: dto.addressEn },
         { key: 'contactNameEn', zh: dto.contactName, en: dto.contactNameEn },
+        { key: 'scaleEn', zh: dto.scale, en: dto.scaleEn },
       ],
       {
         nameZh: dto.nameZh,
@@ -105,6 +106,7 @@ export class CompanyService {
         introEn: dto.introEn ?? null,
         addressEn: dto.addressEn ?? null,
         contactNameEn: dto.contactNameEn ?? null,
+        scaleEn: dto.scaleEn ?? null,
         machineFields: null,
       },
       {
@@ -166,6 +168,9 @@ export class CompanyService {
         prevEn: existing.contactNameEn,
       });
     }
+    if (dto.scale !== undefined || dto.scaleEn !== undefined) {
+      pairs.push({ key: 'scaleEn', zh: dto.scale ?? existing.scale ?? '', en: dto.scaleEn ?? null, prevEn: existing.scaleEn });
+    }
     const data = await this.buildData(
       pairs,
       {
@@ -175,6 +180,7 @@ export class CompanyService {
         introEn: existing.introEn,
         addressEn: existing.addressEn,
         contactNameEn: existing.contactNameEn,
+        scaleEn: existing.scaleEn,
         machineFields: existing.machineFields,
       },
       {
@@ -275,6 +281,7 @@ export class CompanyService {
       introEn: string | null | undefined;
       addressEn: string | null | undefined;
       contactNameEn: string | null | undefined;
+      scaleEn: string | null | undefined;
       machineFields: string | null;
     },
     rest: CompanyRestFields,
@@ -288,6 +295,7 @@ export class CompanyService {
       introEn: enByKey.get('introEn') ?? current.introEn ?? null,
       addressEn: enByKey.get('addressEn') ?? current.addressEn ?? null,
       contactNameEn: enByKey.get('contactNameEn') ?? current.contactNameEn ?? null,
+      scaleEn: enByKey.get('scaleEn') ?? current.scaleEn ?? null,
       machineFields: marks,
       honorImages: JSON.stringify(rest.honorImages),
     };
@@ -354,6 +362,7 @@ export class CompanyService {
       coverUrl: row.coverUrl,
       foundedYear: row.foundedYear,
       scale: row.scale,
+      scaleEn: row.scaleEn,
       address: row.address,
       addressEn: row.addressEn,
       contactName: row.contactName,

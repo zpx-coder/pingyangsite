@@ -54,6 +54,11 @@ export class CreateCompanyDto {
   @MaxLength(100, { message: '员工规模不能超过 100 字' })
   scale?: string;
 
+  @ApiPropertyOptional({ description: '员工规模（英文，留空自动翻译）', example: '100–500 employees' })
+  @IsOptional()
+  @MaxLength(100, { message: '员工规模（英文）不能超过 100 字' })
+  scaleEn?: string;
+
   @ApiPropertyOptional({ description: '企业地址', example: '浙江省温州市平阳县' })
   @IsOptional()
   @MaxLength(500, { message: '地址不能超过 500 字' })

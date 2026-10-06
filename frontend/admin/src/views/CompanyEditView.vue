@@ -28,6 +28,7 @@ interface CompanyForm {
   status: 0 | 1;
   foundedYear: number | '' | null;
   scale: string;
+  scaleEn: string;
   address: string;
   addressEn: string;
   contactName: string;
@@ -50,6 +51,7 @@ const form = reactive<CompanyForm>({
   status: 1,
   foundedYear: null,
   scale: '',
+  scaleEn: '',
   address: '',
   addressEn: '',
   contactName: '',
@@ -119,6 +121,7 @@ function buildPayload(): CompanyPayload {
     categoryIds: [...form.categoryIds],
     foundedYear: year,
     scale: form.scale.trim() || undefined,
+    scaleEn: form.scaleEn.trim() || undefined,
     address: form.address.trim() || undefined,
     addressEn: form.addressEn.trim() || undefined,
     contactName: form.contactName.trim() || undefined,
@@ -168,6 +171,7 @@ async function loadDetail(id: number): Promise<void> {
     form.status = c.status;
     form.foundedYear = c.foundedYear ?? null;
     form.scale = c.scale ?? '';
+    form.scaleEn = c.scaleEn ?? '';
     form.address = c.address ?? '';
     form.addressEn = c.addressEn ?? '';
     form.contactName = c.contactName ?? '';
@@ -254,6 +258,7 @@ onMounted(() => {
           <div class="form-group">
             <label>员工规模</label>
             <input v-model="form.scale" maxlength="100" placeholder="如 200–500 人" />
+            <input v-model="form.scaleEn" class="auto-field" maxlength="100" placeholder="留空保存时自动翻译" />
           </div>
         </div>
         <div class="form-row">
