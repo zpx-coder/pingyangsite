@@ -49,12 +49,10 @@ test('S1 首页双语切换与语言属性', async ({ page }) => {
   await page.goto(`${SITE}/zh-CN`);
   await expect(page.locator('html')).toHaveAttribute('lang', 'zh-CN');
   await expect(page.locator('h1, .hero-title').first()).not.toBeEmpty();
-  // 语言切换器为 .lang-pill 内 <b> 文本项（非 <a> 链接）
+  // 语言切换器为 .lang-pill 内 <b> 文本项（非 <a> 链接）；
+  // SPA 切换即同步 <html lang>（切换器客户端修正，任务 4.4 缺陷修复）
   await page.locator('.lang-pill b:has-text("EN")').click();
   await page.waitForURL(/\/en/);
-  // 根布局为服务端组件，SPA 切换不更新 <html lang>；刷新后按新路径重新渲染
-  //（该框架行为缺陷已记录至任务 4.4 缺陷清单）
-  await page.reload();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.locator('h1, .hero-title').first()).not.toBeEmpty();
 });

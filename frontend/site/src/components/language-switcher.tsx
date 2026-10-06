@@ -14,6 +14,9 @@ export default function LanguageSwitcher({ lang }: { lang: Lang }) {
     const rest = pathname.replace(new RegExp(`^/${lang}(?=/|$)`), '');
     localStorage.setItem('lang', target);
     document.cookie = `lang=${target}; path=/; max-age=31536000; samesite=lax`;
+    // <html lang> 由服务端根布局按请求路径渲染，SPA 切换不重渲文档属性——
+    // 客户端同步修正，避免切换后 documentElement.lang 停留在旧语言
+    document.documentElement.lang = target;
     router.push(`/${target}${rest}`);
   }
 
