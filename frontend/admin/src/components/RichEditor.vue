@@ -3,10 +3,11 @@
 // 工具栏按 PRD §5.3：标题、段落、加粗、斜体、下划线、列表、图片、视频、链接、撤销/重做、清除格式；
 // 粘贴样式过滤由 wangEditor 默认策略承担（禁止直接粘贴外部样式）；
 // 图片/视频经 /admin/upload 接口入库（OSS/CDN，本地驱动为 /uploads 静态目录）
-import { onBeforeUnmount, shallowRef } from 'vue';
+import { onBeforeUnmount, ref, shallowRef, watch } from 'vue';
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue';
 import { DomEditor, type IDomEditor } from '@wangeditor/editor';
 import { request } from '@/api/http';
+import { wrapTopLevelImages } from '@/utils/rich-editor-html.util';
 import '@wangeditor/editor/dist/css/style.css';
 
 interface StoredObject {
@@ -29,6 +30,20 @@ const props = withDefaults(
 const model = defineModel<string>({ required: true });
 // 官方用法：onCreated 记录编辑器实例（IDomEditor），Toolbar 与销毁均基于该实例
 const editorRef = shallowRef<IDomEditor | null>(null);
+
+// 父组件赋值时先做顶层裸图包 <p> 归一化再喂给编辑器（见 rich-editor-html.util.ts 头注），
+// 规避 wangEditor 5.1.23 setHtml 对「块后顶层 img」的未捕获异常。
+// 编辑器自身产出原样回写、不二次归一化：wangEditor 会把仅含图片的段落序列化回裸 <img>，
+// 若对回写值再包裹会形成「包裹→序列化→再包裹」反馈死循环（实测渲染进程卡死），
+// 故用值相等判断跳过回波（模型变化来自下方 watch(editorValue) 回写时不做任何处理）。
+const editorValue = ref('');
+watch(editorValue, (value) => {
+  model.value = value;
+});
+watch(model, (value) => {
+  if (value === editorValue.value) return;
+  editorValue.value = wrapTopLevelImages(value);
+}, { immediate: true });
 
 const toolbarKeys = [
   'headerSelect',
@@ -134,7 +149,7 @@ onBeforeUnmount(() => {
     <!-- 注意：此处不能写 ref="editorRef"——与 setup 同名 ref 冲突时 Vue 会用
          组件实例覆盖 shallowRef，导致 Toolbar 收到不带事件 API 的假 editor（官方用法即无 ref） -->
     <Editor
-      v-model="model"
+      v-model="editorValue"
       :default-config="editorConfig"
       mode="default"
       :style="{ height: `${minHeight}px`, overflowY: 'hidden' }"
