@@ -1,0 +1,13 @@
+{
+  "name": "pingyang-e2e",
+  "private": true,
+  "version": "1.0.0",
+  "description": "平阳产业带官网 Playwright E2E 套件（阶段 4 任务 4.2，核心旅程 ≤20 场景）",
+  "scripts": {
+    "e2e": "playwright test",
+    "e2e:headed": "playwright test --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0"
+  }
+}
