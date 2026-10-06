@@ -199,6 +199,15 @@ export class CategoryService {
     });
   }
 
+  /** 官网类目详情（上架才可见，其余 404）：供官网中间件设计 404 预检使用 */
+  async findPublished(id: number) {
+    const category = await this.prisma.category.findUnique({ where: { id } });
+    if (!category || category.status !== 1) {
+      throw new NotFoundException('类目不存在或已下架');
+    }
+    return category;
+  }
+
   private buildWhere(query: QueryCategoryDto) {
     const where: { status?: number; OR?: object[] } = {};
     if (query.status !== undefined) {
