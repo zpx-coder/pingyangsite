@@ -108,13 +108,15 @@ export class CategoryService {
     // 英文未显式提交时按留空处理：中文改动会自动重译并打标记，不沿用旧英文。
     const pairs: BilingualFieldPair[] = [];
     if (dto.nameZh !== undefined || dto.nameEn !== undefined) {
-      pairs.push({ key: 'nameEn', zh: dto.nameZh ?? existing.nameZh, en: dto.nameEn ?? null });
+      // prevEn：表单回传未改动的机器翻译英文时保持原标记（方案 §5.3 原值保留）
+      pairs.push({ key: 'nameEn', zh: dto.nameZh ?? existing.nameZh, en: dto.nameEn ?? null, prevEn: existing.nameEn });
     }
     if (dto.introZh !== undefined || dto.introEn !== undefined) {
       pairs.push({
         key: 'introEn',
         zh: dto.introZh ?? existing.introZh ?? null,
         en: dto.introEn ?? null,
+        prevEn: existing.introEn,
       });
     }
     const { machineFields, enByKey } = await translateFields(pairs, existing.machineFields, this.translation);

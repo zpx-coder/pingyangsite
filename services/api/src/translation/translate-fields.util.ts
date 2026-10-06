@@ -23,6 +23,21 @@ export interface TranslateFieldsResult {
   enByKey: Map<string, string | null>;
 }
 
+/** 归一化比较用文本内容：剥标签、解实体、合并空白（富文本经编辑器往返序列化后
+ *  结构可能变化——裸文本被包进 <p>、空段落 <p><br></p> 等，文本内容一致即视为未改动）。 */
+function htmlTextContent(value: string): string {
+  return value
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export async function translateFields(
   pairs: BilingualFieldPair[],
   machineFields: string | null | undefined,
@@ -34,8 +49,8 @@ export async function translateFields(
   for (const pair of pairs) {
     const en = pair.en?.trim() ?? '';
     if (en !== '') {
-      // 值与上次保存一致 → 视为未改动，保持原标记（不重复判为人工填写）
-      if (pair.prevEn !== undefined && en === (pair.prevEn?.trim() ?? '')) {
+      // 值与上次保存一致（按文本内容归一化比较）→ 视为未改动，保持原标记（不重复判为人工填写）
+      if (pair.prevEn !== undefined && htmlTextContent(en) === htmlTextContent(pair.prevEn ?? '')) {
         enByKey.set(pair.key, en);
         continue;
       }

@@ -144,23 +144,26 @@ export class CompanyService {
     // 英文未显式提交时按留空处理：中文改动会自动重译并打标记，不沿用旧英文。
     const pairs: BilingualFieldPair[] = [];
     if (dto.nameZh !== undefined || dto.nameEn !== undefined) {
-      pairs.push({ key: 'nameEn', zh: dto.nameZh ?? existing.nameZh, en: dto.nameEn ?? null });
+      // prevEn：表单回传未改动的机器翻译英文时保持原标记（方案 §5.3 原值保留）
+      pairs.push({ key: 'nameEn', zh: dto.nameZh ?? existing.nameZh, en: dto.nameEn ?? null, prevEn: existing.nameEn });
     }
     if (dto.introZh !== undefined || dto.introEn !== undefined) {
       pairs.push({
         key: 'introEn',
         zh: dto.introZh ?? existing.introZh ?? '',
         en: dto.introEn ?? null,
+        prevEn: existing.introEn,
       });
     }
     if (dto.address !== undefined || dto.addressEn !== undefined) {
-      pairs.push({ key: 'addressEn', zh: dto.address ?? existing.address ?? '', en: dto.addressEn ?? null });
+      pairs.push({ key: 'addressEn', zh: dto.address ?? existing.address ?? '', en: dto.addressEn ?? null, prevEn: existing.addressEn });
     }
     if (dto.contactName !== undefined || dto.contactNameEn !== undefined) {
       pairs.push({
         key: 'contactNameEn',
         zh: dto.contactName ?? existing.contactName ?? '',
         en: dto.contactNameEn ?? null,
+        prevEn: existing.contactNameEn,
       });
     }
     const data = await this.buildData(
