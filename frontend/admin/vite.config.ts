@@ -15,6 +15,9 @@ export default defineConfig({
     proxy: {
       '/api': { target: 'http://127.0.0.1:3001', changeOrigin: true },
       '/uploads': { target: 'http://127.0.0.1:3001', changeOrigin: true },
+      // 演示数据图片为站内相对路径 /img/*.jpg，由官网 public/img 提供（生产同域拓扑下
+      // 后台与官网同源，/img 自然可达；开发期后台独立端口，须代理到官网 dev server 对齐生产行为）
+      '/img': { target: 'http://127.0.0.1:3999', changeOrigin: true },
     },
   },
   // wangEditor 官方 Vue3 建议：排除预打包，避免 editor-for-vue 与 core 各持一份实例
