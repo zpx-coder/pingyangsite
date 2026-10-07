@@ -266,7 +266,8 @@ a {
   display: flex;
   align-items: center;
 }
-.nav a {
+.nav a,
+.nav .nav-item {
   color: var(--ink);
   font-size: 15.5px;
   letter-spacing: 2px;
@@ -275,7 +276,8 @@ a {
   transition: 0.2s;
   font-weight: 500;
 }
-.nav a::after {
+.nav a::after,
+.nav .nav-item::after {
   content: '';
   position: absolute;
   left: 50%;
@@ -287,12 +289,20 @@ a {
   transform: translateX(-50%);
 }
 .nav a:hover::after,
-.nav a.on::after {
+.nav a.on::after,
+.nav .nav-item:hover::after,
+.nav .nav-item.on::after {
   width: 22px;
 }
 .nav a:hover,
-.nav a.on {
+.nav a.on,
+.nav .nav-item:hover,
+.nav .nav-item.on {
   color: var(--gold-d);
+}
+/* 非链接导航项（类目索引页建设中不跳转）：保留下拉悬停手型暗示 */
+.nav .nav-item {
+  cursor: pointer;
 }
 .nav .drop {
   position: relative;

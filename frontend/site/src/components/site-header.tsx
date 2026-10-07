@@ -86,9 +86,9 @@ export default function SiteHeader({
           {items.map((item) =>
             item.drop ? (
               <div key={item.key} className="drop">
-                <a className={current === item.key ? 'on' : ''} href={`${base}/categories`}>
-                  {item.label}
-                </a>
+                {/* 类目索引页建设中：顶部「特色产业」不跳转（负责人 2026-10-07 确认），
+                    仅保留悬停下拉进入具体类目详情页；nav-item 复用 .nav a 视觉样式 */}
+                <span className={`nav-item ${current === item.key ? 'on' : ''}`}>{item.label}</span>
                 <div className="drop-panel">
                   {categories.length > 0 ? (
                     categories.slice(0, 8).map((category, i) => (
