@@ -21,11 +21,12 @@ export default function CategorySection({
   return (
     <div className="section" id="sec-cat" style={{ paddingBottom: 40 }}>
       <div className="container">
-        <div className="sec-head rv">
+        {/* 与 news-section 一致：sec-head 经 Reveal 滚动渐入（裸 rv 类无 is-in 触发，标题会永久隐藏） */}
+        <Reveal className="sec-head">
           <div className="kicker">{t.home.secCat.kicker}</div>
           <h2>{t.home.secCat.title}</h2>
           <p>{t.home.secCat.desc}</p>
-        </div>
+        </Reveal>
         <div className="cat-grid">
           {items.map((category, i) => (
             <Reveal key={category.id} delay={(i % 4) + 1} className="cat-card">

@@ -49,6 +49,9 @@ test('S1 首页双语切换与语言属性', async ({ page }) => {
   await page.goto(`${SITE}/zh-CN`);
   await expect(page.locator('html')).toHaveAttribute('lang', 'zh-CN');
   await expect(page.locator('h1, .hero-title').first()).not.toBeEmpty();
+  // 类目区块标题必须真实可见（textContent 断言查不出 .rv 未触发 is-in 的 opacity:0 隐藏，4.4 后回归）
+  await page.locator('#sec-cat').scrollIntoViewIfNeeded();
+  await expect(page.locator('#sec-cat h2:has-text("平阳特色产业类目")')).toBeVisible();
   // 语言切换器为 .lang-pill 内 <b> 文本项（非 <a> 链接）；
   // SPA 切换即同步 <html lang>（切换器客户端修正，任务 4.4 缺陷修复）
   await page.locator('.lang-pill b:has-text("EN")').click();
