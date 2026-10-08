@@ -14,7 +14,7 @@ export const dict = {
     hotline: '0577-6372 8888',
     logoAlt: '平阳 logo',
     contactCta: '联系我们',
-    nav: { home: '首页', about: '平阳介绍', categories: '特色产业', news: '新闻动态', contact: '联系我们' },
+    nav: { home: '首页', about: '平阳介绍', categories: '特色产业', matchmaking: '外贸对接会', news: '新闻动态', contact: '联系我们' },
     footer: {
       quickLinks: '快速链接',
       categories: '特色产业',
@@ -197,7 +197,7 @@ export const dict = {
     hotline: '0577-6372 8888',
     logoAlt: 'Pingyang logo',
     contactCta: 'Contact Us',
-    nav: { home: 'Home', about: 'About Pingyang', categories: 'Industries', news: 'News', contact: 'Contact' },
+    nav: { home: 'Home', about: 'About Pingyang', categories: 'Industries', matchmaking: 'Trade Matchmaking', news: 'News', contact: 'Contact' },
     footer: {
       quickLinks: 'Quick Links',
       categories: 'Industries',

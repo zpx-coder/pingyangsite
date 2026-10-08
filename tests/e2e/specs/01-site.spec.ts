@@ -101,3 +101,26 @@ test('S6 中文询盘提交成功（后台 A6 消费）', async ({ page }) => {
 test('S7 英文询盘提交成功（后台 A6 消费）', async ({ page }) => {
   await submitInquiry(page, 'en', getRun().M.inquiryEn, 'Thank you for your interest');
 });
+
+test('S8 导航外贸对接会外链（v1.2：位置/双语文案/新标签页属性）', async ({ page }) => {
+  const external = 'https://www.iyicaibao.com/ycb_static/pingyang/index.html';
+  const navTexts = async () =>
+    page.locator('.nav .container > a, .nav .container > .drop > span.nav-item').allTextContents();
+  await page.goto(`${SITE}/zh-CN`);
+  // 顺序：紧跟「特色产业」之后
+  const zh = await navTexts();
+  const catIdx = zh.findIndex((t) => t.includes('特色产业'));
+  expect(catIdx).toBeGreaterThanOrEqual(0);
+  expect(zh[catIdx + 1]).toContain('外贸对接会');
+  // 外链属性：href/target/rel（不实际点击，避免依赖第三方站点）
+  const link = page.locator(`.nav a[href="${external}"]`);
+  await expect(link).toBeVisible();
+  await expect(link).toHaveAttribute('target', '_blank');
+  await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  // 英文态文案
+  await page.goto(`${SITE}/en`);
+  const en = await navTexts();
+  const enCatIdx = en.findIndex((t) => t.includes('Industries'));
+  expect(enCatIdx).toBeGreaterThanOrEqual(0);
+  expect(en[enCatIdx + 1]).toContain('Trade Matchmaking');
+});

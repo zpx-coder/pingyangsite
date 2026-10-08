@@ -8,6 +8,9 @@ import LanguageSwitcher from './language-switcher';
 import { dict, type Lang } from '@/lib/i18n';
 import { pickLang, type PublicCategory } from '@/lib/api';
 
+// 外贸对接会外链（v1.2 PRD：第三方静态页，中英态同一链接，新标签页打开）
+const MATCHMAKING_URL = 'https://www.iyicaibao.com/ycb_static/pingyang/index.html';
+
 export default function SiteHeader({
   lang,
   categories = [],
@@ -21,10 +24,12 @@ export default function SiteHeader({
   const pathname = usePathname();
   const t = dict[lang];
 
-  const items: { key: string; href: string; label: string; drop?: boolean }[] = [
+  const items: { key: string; href: string; label: string; drop?: boolean; external?: boolean }[] = [
     { key: 'home', href: '', label: t.nav.home },
     { key: 'about', href: 'about', label: t.nav.about },
     { key: 'categories', href: 'categories', label: t.nav.categories, drop: true },
+    // v1.2：外贸对接会为外部链接（新标签页），不参与站内当前页高亮
+    { key: 'matchmaking', href: MATCHMAKING_URL, label: t.nav.matchmaking, external: true },
     { key: 'news', href: 'news', label: t.nav.news },
     { key: 'contact', href: 'contact', label: t.nav.contact },
   ];
@@ -111,6 +116,11 @@ export default function SiteHeader({
                   )}
                 </div>
               </div>
+            ) : item.external ? (
+              // 外链菜单项（v1.2）：新标签页打开，rel 防反向篡改与引荐泄漏
+              <a key={item.key} href={item.href} target="_blank" rel="noopener noreferrer">
+                {item.label}
+              </a>
             ) : (
               <Link
                 key={item.key}
