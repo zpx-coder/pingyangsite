@@ -11,6 +11,9 @@ import { buildMetadata } from '@/lib/seo';
 // 封面图与横幅回退图为设计稿静态素材（方案 §4.5 素材规范，本地化存储）
 const FALLBACK_BANNER = '/img/banner1.jpg';
 const VIDEO_COVER = '/img/poster.jpg';
+// 区位优势配图：温州海岸实拍（Pexels 免费商用授权免署名；摄影：柳树无，拍摄地温州；
+// 2026-10-08 应负责人要求替换原 about3.jpg 素材）
+const LOCATION_IMAGE = '/img/loc-wenzhou.jpg';
 
 // 平阳介绍页 TDK/hreflang（任务 2.10）
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
@@ -77,7 +80,7 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
             </div>
             <div style={{ height: '100%' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/about3.jpg" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+              <img src={LOCATION_IMAGE} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
             </div>
           </div>
         </Reveal>
