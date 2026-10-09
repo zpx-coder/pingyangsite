@@ -41,7 +41,7 @@ export const dict = {
         { end: 6, suffix: '', label: '特色产业集群' },
         { end: 3000, suffix: '+', label: '制造企业' },
         { end: 80, suffix: '+', label: '出口国家地区' },
-        { end: 200, suffix: '亿+', label: '塑编产业年产值' },
+        { end: 150, suffix: '亿+', label: '年出口额' },
       ],
       tickerPrefix: '平阳特色产业集群',
       secCat: {
@@ -223,7 +223,7 @@ export const dict = {
         { end: 6, suffix: '', label: 'Featured Industry Clusters' },
         { end: 3000, suffix: '+', label: 'Manufacturing Enterprises' },
         { end: 80, suffix: '+', label: 'Export Countries & Regions' },
-        { end: 20, suffix: 'B+', label: 'Annual Woven Packaging Output' },
+        { end: 15, suffix: 'B+', label: 'Annual Export Value' },
       ],
       tickerPrefix: 'Pingyang Featured Industries',
       secCat: {
