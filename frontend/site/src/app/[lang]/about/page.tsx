@@ -11,9 +11,9 @@ import { buildMetadata } from '@/lib/seo';
 // 封面图与横幅回退图为设计稿静态素材（方案 §4.5 素材规范，本地化存储）
 const FALLBACK_BANNER = '/img/banner1.jpg';
 const VIDEO_COVER = '/img/poster.jpg';
-// 区位优势配图：温州海岸实拍（Pexels 免费商用授权免署名；摄影：柳树无，拍摄地温州；
-// 2026-10-08 应负责人要求替换原 about3.jpg 素材）
-const LOCATION_IMAGE = '/img/loc-wenzhou.jpg';
+// 区位优势配图：负责人提供素材 docs/平阳介绍.jpg（1280×720 原图入库），
+// 2026-10-09 应负责人要求替换原 loc-wenzhou.jpg（温州海岸实拍）
+const LOCATION_IMAGE = '/img/loc-pingyang.jpg';
 
 // 平阳介绍页 TDK/hreflang（任务 2.10）
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {

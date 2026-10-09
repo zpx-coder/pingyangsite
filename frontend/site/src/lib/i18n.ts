@@ -78,9 +78,9 @@ export const dict = {
       videoTitle: '平阳产业带宣传片',
       videoCaption: '山海之城 · 制造之都 —— 认识平阳，从这里开始',
       locKicker: '区位优势',
-      locTitle: '浙江东南沿海 · 温州南部副中心',
+      locTitle: '东海之滨，雁山之南，千年古邑平阳',
       locBody:
-        '平阳县位于浙江省东南沿海，隶属温州市，陆地面积约 1051 平方公里，常住人口约 90 万。县境依山面海，海岸线绵长，距温州龙湾国际机场约 40 分钟车程，甬台温高速、温福铁路穿境而过，交通区位优越。',
+        '东海之滨，雁山之南，千年古邑平阳，坐落于温州大都市区南部，兼具山海风光、红色底蕴与澎湃产业活力。西晋置县文脉绵延，南麂列岛碧海天成，南雁荡奇峰叠翠；浙南革命星火在此点燃，苏步青、谢侠逊等名人光耀史册，平阳木偶戏传承千年非遗。',
       locStats: [
         { value: '5', label: '高速互通' },
         { value: '2', label: '铁路站点' },
@@ -260,9 +260,9 @@ export const dict = {
       videoTitle: 'Pingyang Industrial Belt Promo',
       videoCaption: 'City by the sea · A manufacturing powerhouse — get to know Pingyang',
       locKicker: 'LOCATION',
-      locTitle: 'Southeast Zhejiang Coast · Southern Hub of Wenzhou',
+      locTitle: 'By the East China Sea, South of the Yandang Mountains: A Millennial County',
       locBody:
-        'Pingyang County is located on the southeast coast of Zhejiang Province, under the jurisdiction of Wenzhou. It covers about 1,051 km² of land with a resident population of around 0.9 million. Bordered by mountains and sea with a long coastline, it is about 40 minutes by car from Wenzhou Longwan International Airport, with the Yong-Tai-Wen Expressway and the Wenzhou-Fuzhou Railway passing through.',
+        'By the East China Sea and south of the Yandang Mountains lies Pingyang, a millennial county in the southern part of the Greater Wenzhou metropolitan area, blending mountain-and-sea scenery, a revolutionary heritage and vigorous industrial vitality. A county since the Western Jin dynasty, it carries an unbroken cultural lineage: the pristine waters of the Nanji Islands, the layered peaks of the South Yandang Mountains. Here the spark of revolution in southern Zhejiang was kindled; luminaries such as Su Buqing and Xie Xiaxun shine in its annals; and the Pingyang puppet show carries a thousand years of intangible heritage.',
       locStats: [
         { value: '5', label: 'Expressway Interchanges' },
         { value: '2', label: 'Railway Stations' },
