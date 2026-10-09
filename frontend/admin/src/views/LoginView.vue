@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // 登录页（任务 3.1 骨架版 / 3.3 完善）：与原型 adminLogin 一致
-// 手机号 + 密码 → 服务端会话；成功后默认进入询盘管理（PRD §7.0）；失败展示后端消息（含锁定剩余时间）
+// 手机号 + 密码 → 服务端会话；成功后默认进入询盘管理（PRD §7.0）；失败展示后端消息
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
@@ -66,7 +66,7 @@ async function onSubmit() {
           {{ submitting ? '登录中…' : '登 录' }}
         </button>
       </form>
-      <div class="ft">首期仅一个超级管理员账号 · 连续失败 5 次锁定 15 分钟</div>
+      <div class="ft">首期仅一个超级管理员账号</div>
     </div>
   </div>
 </template>
