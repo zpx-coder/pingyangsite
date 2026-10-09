@@ -33,7 +33,10 @@ describe('UpdateNewsDto', () => {
   });
 
   it('封面图 URL 格式与长度校验', async () => {
+    // 演示数据封面使用站内相对路径（/img/*.jpg），须通过校验（缺陷修复）
+    expect(await errorMessages({ coverUrl: '/img/n1.jpg' })).toEqual([]);
     expect(await errorMessages({ coverUrl: 'abc' })).toContain('封面图地址格式不正确');
+    expect(await errorMessages({ coverUrl: 'example.com/a.jpg' })).toContain('封面图地址格式不正确');
     expect(await errorMessages({ coverUrl: `https://example.com/${'x'.repeat(250)}` })).toContain(
       '封面图地址过长',
     );
