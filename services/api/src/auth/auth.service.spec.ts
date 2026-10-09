@@ -1,14 +1,12 @@
 // 认证与账号管理服务单元测试（PRD §7.0，任务 1.1/1.11）
-// 服务层 mock 模式参照：Prisma 客户端 / Redis / 日志均以 jest.fn 注入，
+// 服务层 mock 模式参照：Prisma 客户端 / 日志均以 jest.fn 注入，
 // 不依赖真实数据库与 Redis（测试可独立运行、无状态共享）。
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { hashSync } from 'bcryptjs';
 import type { Request } from 'express';
-import type { RedisClientType } from 'redis';
 import { AuthService } from './auth.service';
 import type { PrismaService } from '../prisma/prisma.service';
 import type { AppLoggerService } from '../logger/app-logger.service';
-import { loginFailKey, loginLockKey } from './auth.constants';
 
 const PHONE = '13800000000';
 // 测试用低开销哈希（成本 4 加速；DUMMY 比对在服务内为成本 10，仅一次）
@@ -26,17 +24,6 @@ function makePrisma(user: AdminUserMock | null) {
   } as unknown as PrismaService;
 }
 
-function makeRedis() {
-  return {
-    ttl: jest.fn(async () => -2),
-    del: jest.fn(async () => 1),
-    incr: jest.fn(async () => 1),
-    expire: jest.fn(async () => true),
-    set: jest.fn(async () => 'OK'),
-    get: jest.fn(async () => null),
-  } as unknown as RedisClientType;
-}
-
 function makeLogger() {
   return { audit: jest.fn(), error: jest.fn(), log: jest.fn(), warn: jest.fn(), debug: jest.fn(), verbose: jest.fn() } as unknown as AppLoggerService;
 }
@@ -51,51 +38,32 @@ function makeReq(phone = PHONE): Request {
 
 function makeService(user: AdminUserMock | null = { id: 1, phone: PHONE, passwordHash: PASSWORD_HASH }) {
   const prisma = makePrisma(user);
-  const redis = makeRedis();
   const logger = makeLogger();
-  const service = new AuthService(prisma, redis, logger);
-  return { service, prisma, redis, logger };
+  const service = new AuthService(prisma, logger);
+  return { service, prisma, logger };
 }
 
 describe('AuthService.login', () => {
-  it('成功：清失败状态、重建会话、返回手机号', async () => {
-    const { service, redis, logger } = makeService();
+  it('成功：重建会话、返回手机号', async () => {
+    const { service, logger } = makeService();
     const req = makeReq();
     const result = await service.login({ phone: PHONE, password: PASSWORD }, req);
     expect(result).toEqual({ phone: PHONE });
-    expect(redis.del).toHaveBeenCalledWith([loginFailKey(PHONE), loginLockKey(PHONE)]);
     expect(req.session.regenerate).toHaveBeenCalled();
     expect(logger.audit).toHaveBeenCalledWith('login', PHONE, { result: 'success' });
   });
 
-  it('账号锁定：提示剩余分钟数', async () => {
-    const { service, redis } = makeService();
-    (redis.ttl as jest.Mock).mockResolvedValueOnce(15 * 60);
-    await expect(service.login({ phone: PHONE, password: PASSWORD }, makeReq())).rejects.toThrow(
-      new UnauthorizedException('账号已锁定，请 15 分钟后再试'),
-    );
-  });
-
-  it('密码错误：记录失败 + audit fail + 401', async () => {
-    const { service, redis, logger } = makeService();
+  it('密码错误：audit fail + 401', async () => {
+    const { service, logger } = makeService();
     await expect(service.login({ phone: PHONE, password: 'WrongPass1' }, makeReq())).rejects.toThrow(
       new UnauthorizedException('手机号或密码错误'),
     );
-    expect(redis.incr).toHaveBeenCalledWith(loginFailKey(PHONE));
     expect(logger.audit).toHaveBeenCalledWith('login', PHONE, { result: 'fail' });
   });
 
   it('账号不存在：走 dummy 比对仍返回 401', async () => {
     const { service } = makeService(null);
     await expect(service.login({ phone: PHONE, password: PASSWORD }, makeReq())).rejects.toThrow(UnauthorizedException);
-  });
-
-  it('连续失败 5 次锁定：设锁定标记并清零计数', async () => {
-    const { service, redis } = makeService();
-    (redis.incr as jest.Mock).mockResolvedValue(5);
-    await service.login({ phone: PHONE, password: 'WrongPass1' }, makeReq()).catch(() => undefined);
-    expect(redis.set).toHaveBeenCalledWith(loginLockKey(PHONE), '1', { EX: 15 * 60 });
-    expect(redis.del).toHaveBeenCalledWith(loginFailKey(PHONE));
   });
 });
 

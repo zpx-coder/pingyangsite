@@ -24,7 +24,7 @@ async function bootstrap(): Promise<void> {
   app.enableCors();
 
   // 仅信任本机反代（生产 Nginx 同机部署）发送的 X-Forwarded-For：恢复真实客户端 IP。
-  // 询盘限流（3 次/分、50 次/日）、登录锁定与询盘 IP 落库均依赖 req.ip；缺失时经反代
+  // 询盘限流（3 次/分、50 次/日）与询盘 IP 落库均依赖 req.ip；缺失时经反代
   // 后全体访客共用 127.0.0.1 配额。远程直连 3001 的请求不受信任，req.ip 仍取 socket 地址。
   app.set('trust proxy', 'loopback');
 
