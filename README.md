@@ -32,8 +32,10 @@ MySQL 连接外部服务器。本机生成 amd64 镜像和 tar，服务器加载
 服务器仍需由操作者上传、加载并重建容器。
 
 已合并 `origin/develop` 的 `1fb6eef`，同事的新功能与 `/pingyang` 适配均保留。
-合并代码已用本地 `pingyangsite:merged-amd64` 验证；原生产镜像标签和现有 tar
-尚未替换，不包含本次同事更新。发布新版本前按第 7 节构建，再导出、上传。
+合并代码已用本地 `pingyangsite:merged-amd64` 验证，真实 MySQL 连接、官网与
+后台入口及静态资源通过，容器 `healthy`。生产标签 `pingyangsite:prod-amd64`
+及现有 tar 已更新为本次合并版本；服务器仍待上传、加载和重建。
+本地新版本入口为 `http://localhost:18081/pingyang/`，原 8080 容器保留。
 
 新对话可直接粘贴：
 
@@ -355,6 +357,12 @@ sudo docker restart pingyangsite  # 仅重启当前版本
 回退：停止并删除新容器，复用第 4 节 `docker run` 的环境文件、端口与数据卷，
 将最后的镜像名改为 `pingyangsite:before-update`。不要删除数据卷。
 若备份的是最初不支持 `/pingyang` 的旧镜像，只能恢复原根路径服务。
+
+## Git 协作
+
+`develop2.0` 作为后续集成分支，包含同事功能和已验证的 `/pingyang` 部署适配。
+新功能分支从最新 `origin/develop2.0` 创建，完成后通过 PR 合回 `develop2.0`。
+`feature/pingyang-subpath-deploy` 保留本次适配版本；原 `develop` 保留历史。
 
 ## 项目文档
 
