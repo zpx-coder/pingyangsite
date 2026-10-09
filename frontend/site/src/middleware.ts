@@ -6,6 +6,7 @@
 // 3) 非法语言段（非 zh-CN/en）直接返回设计 404（[lang] 布局的 notFound 同受上述缺陷影响）。
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { APP_BASE_PATH } from '@/lib/paths';
 
 const API_BASE = process.env.API_BASE_URL ?? 'http://127.0.0.1:3001';
 const DETAIL_RE = /^\/(zh-CN|en)\/(products|companies|categories|news)\/(\d+)\/?$/;
@@ -39,7 +40,7 @@ body{margin:0;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-ser
 <div class="not-found">
 <div class="code">404</div>
 <div class="msg">${title}</div>
-<a class="btn btn-gold" href="/${lang}">${back}</a>
+<a class="btn btn-gold" href="${APP_BASE_PATH}/${lang}">${back}</a>
 </div>
 </body>
 </html>`;
@@ -56,7 +57,11 @@ function notFoundResponse(lang: 'zh-CN' | 'en'): NextResponse {
 }
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const rawPathname = request.nextUrl.pathname;
+  // Next.js normally removes basePath here; also accept versions that retain it.
+  const pathname = APP_BASE_PATH && (rawPathname === APP_BASE_PATH || rawPathname.startsWith(`${APP_BASE_PATH}/`))
+    ? rawPathname.slice(APP_BASE_PATH.length) || '/'
+    : rawPathname;
 
   // 非法语言段：直接 404（/en 前缀按 en 语言兜底，其余默认 zh-CN）
   if (INVALID_LANG_RE.test(pathname) && request.method === 'GET') {

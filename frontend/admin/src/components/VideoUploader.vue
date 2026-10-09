@@ -3,6 +3,7 @@
 import { ref } from 'vue';
 import { ElMessage, type UploadRequestOptions } from 'element-plus';
 import { request } from '@/api/http';
+import { mediaUrl } from '@/utils/paths';
 
 interface StoredObject {
   key: string;
@@ -47,7 +48,7 @@ async function onUpload(options: UploadRequestOptions): Promise<void> {
 <template>
   <div class="upload-row">
     <div v-if="model" class="video-cell">
-      <video :src="model" controls preload="metadata" />
+      <video :src="mediaUrl(model)" controls preload="metadata" />
       <span class="img-del" @click="model = ''">×</span>
     </div>
     <el-upload

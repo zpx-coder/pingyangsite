@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Reveal from '../motion/reveal';
 import { pickLang, type HomeAboutConfig } from '../../lib/api';
 import type { Dict, Lang } from '../../lib/i18n';
+import { mediaUrl } from '@/lib/paths';
 
 export default function AboutSection({
   about,
@@ -27,11 +28,11 @@ export default function AboutSection({
             <div className="frame" />
             {image && (
               <div className="big">
-                <img src={image} alt={title} />
+                <img src={mediaUrl(image)} alt={title} />
               </div>
             )}
             <div className="small">
-              <img src="/img/about2.jpg" alt="" />
+              <img src={mediaUrl('/img/about2.jpg')} alt="" />
             </div>
           </Reveal>
           <Reveal delay={2} className="about-txt">

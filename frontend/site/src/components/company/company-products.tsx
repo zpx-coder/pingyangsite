@@ -8,6 +8,7 @@ import Reveal from '@/components/motion/reveal';
 import { pickLang, type Paged, type PublicCompanyProduct } from '@/lib/api';
 import { dict, type Lang } from '@/lib/i18n';
 import { pageNumbers } from '@/lib/pagination';
+import { browserPath, mediaUrl } from '@/lib/paths';
 
 const PAGE_SIZE = 12;
 
@@ -32,7 +33,8 @@ export default function CompanyProducts({
     setLoading(true);
     setError(false);
     try {
-      const res = await fetch(`/api/v1/public/companies/${companyId}?page=${targetPage}&pageSize=${PAGE_SIZE}`, {
+      const url = browserPath(`/api/v1/public/companies/${companyId}?page=${targetPage}&pageSize=${PAGE_SIZE}`);
+      const res = await fetch(url, {
         cache: 'no-store',
       });
       if (!res.ok) {
@@ -86,7 +88,7 @@ export default function CompanyProducts({
                   <div className="im">
                     {product.mainImage && (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={product.mainImage} alt="" />
+                      <img src={mediaUrl(product.mainImage)} alt="" />
                     )}
                   </div>
                   <div className="bd">

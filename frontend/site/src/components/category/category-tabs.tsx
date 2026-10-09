@@ -8,6 +8,7 @@ import Reveal from '@/components/motion/reveal';
 import { pickLang, type Paged, type PublicCompany, type PublicProductCard } from '@/lib/api';
 import { dict, type Lang } from '@/lib/i18n';
 import { pageNumbers } from '@/lib/pagination';
+import { browserPath, mediaUrl } from '@/lib/paths';
 
 const PAGE_SIZE = 12;
 
@@ -41,7 +42,8 @@ export default function CategoryTabs({
     try {
       const path =
         target === 'products' ? '/api/v1/public/products' : '/api/v1/public/companies';
-      const res = await fetch(`${path}?categoryId=${categoryId}&page=${targetPage}&pageSize=${PAGE_SIZE}`, {
+      const url = browserPath(`${path}?categoryId=${categoryId}&page=${targetPage}&pageSize=${PAGE_SIZE}`);
+      const res = await fetch(url, {
         cache: 'no-store',
       });
       if (!res.ok) {
@@ -97,7 +99,7 @@ export default function CategoryTabs({
                   <div className="im">
                     {product.mainImage && (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={product.mainImage} alt="" />
+                      <img src={mediaUrl(product.mainImage)} alt="" />
                     )}
                   </div>
                   <div className="bd">
@@ -121,7 +123,7 @@ export default function CategoryTabs({
                 <Link href={`/${lang}/companies/${company.id}`} style={{ display: 'flex', gap: 18, flex: 1 }}>
                   {company.logoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img className="logo-img" src={company.logoUrl} alt="" />
+                    <img className="logo-img" src={mediaUrl(company.logoUrl)} alt="" />
                   ) : (
                     <div className="logo-mark" style={{ background: MARK_COLORS[company.id % MARK_COLORS.length] }}>
                       {/* 字标取品牌名首字：企业名通常带地域前缀（温州/浙江…），跳过前缀取第 3 字，与设计稿一致 */}

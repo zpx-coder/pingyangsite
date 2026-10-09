@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  basePath: process.env.NEXT_PUBLIC_APP_BASE_PATH || '',
   // 本地开发代理（任务 2.1）：/api/v1/* 转发到本机后端；生产由 Nginx 同域反代
   async rewrites() {
     return [

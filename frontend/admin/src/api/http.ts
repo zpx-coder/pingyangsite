@@ -2,6 +2,7 @@
 // 开发期经 Vite 代理、生产经 Nginx 反代，均为同域请求（会话 Cookie 自动携带）
 import axios, { AxiosError, type AxiosRequestConfig } from 'axios';
 import { ElMessage } from 'element-plus';
+import { APP_BASE_PATH } from '@/utils/paths';
 
 export class ApiError extends Error {
   readonly code: number;
@@ -18,7 +19,7 @@ interface Envelope<T> {
 }
 
 export const http = axios.create({
-  baseURL: '/api/v1',
+  baseURL: `${APP_BASE_PATH}/api/v1`,
   timeout: 30000,
   withCredentials: true,
 });

@@ -4,6 +4,7 @@
 import { ref } from 'vue';
 import { ElMessage, type UploadRequestOptions } from 'element-plus';
 import { request } from '@/api/http';
+import { mediaUrl } from '@/utils/paths';
 
 interface StoredObject {
   key: string;
@@ -86,13 +87,18 @@ function removeAt(index: number): void {
     <!-- 已上传图预览 -->
     <template v-if="multiple">
       <div v-for="(url, i) in (model as string[])" :key="url" class="img-cell" :style="{ width: (width ?? size) + 'px', height: size + 'px' }">
-        <el-image :src="url" fit="cover" :preview-src-list="(model as string[])" :initial-index="i" />
+        <el-image
+          :src="mediaUrl(url)"
+          fit="cover"
+          :preview-src-list="(model as string[]).map(mediaUrl)"
+          :initial-index="i"
+        />
         <span class="img-del" @click="removeAt(i)">×</span>
       </div>
     </template>
     <template v-else>
       <div v-if="model && !Array.isArray(model)" class="img-cell" :style="{ width: (width ?? size) + 'px', height: size + 'px' }">
-        <el-image :src="model" fit="cover" :preview-src-list="[model]" />
+        <el-image :src="mediaUrl(model as string)" fit="cover" :preview-src-list="[mediaUrl(model as string)]" />
         <span class="img-del" @click="model = ''">×</span>
       </div>
     </template>

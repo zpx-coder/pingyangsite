@@ -5,6 +5,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { COUNTRIES, COMMON_COUNTRIES } from '@/lib/countries';
 import { dict, type Lang } from '@/lib/i18n';
+import { browserPath } from '@/lib/paths';
 
 const REQUEST_TIMEOUT_MS = 15_000;
 const PHONE_RE = /^[0-9+\-\s]{6,20}$/;
@@ -55,7 +56,7 @@ export default function InquiryForm({
 
   const refreshCaptcha = async () => {
     try {
-      const res = await fetch('/api/v1/public/captcha', { cache: 'no-store' });
+      const res = await fetch(browserPath('/api/v1/public/captcha'), { cache: 'no-store' });
       const body = (await res.json()) as { code: number; message: string; data: { captchaId: string; svg: string } };
       if (body.code !== 0) {
         throw new Error(body.message);
@@ -103,7 +104,7 @@ export default function InquiryForm({
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     try {
-      const res = await fetch('/api/v1/public/inquiries', {
+      const res = await fetch(browserPath('/api/v1/public/inquiries'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

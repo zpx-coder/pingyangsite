@@ -1,0 +1,15 @@
+.git
+**/node_modules
+**/.next
+**/dist
+**/coverage
+**/.env
+**/.env.*
+**/*.env
+**/*.env.*
+**/uploads
+**/logs
+**/*.log
+**/*.tar
+**/*.tar.gz
+.DS_Store

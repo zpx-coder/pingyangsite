@@ -6,6 +6,7 @@
 // showIndex 显示右下角「01 / 03」计数。
 // prefers-reduced-motion：全局降级关闭 Ken Burns 与过渡（文案仍完整呈现）。
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { mediaUrl } from '@/lib/paths';
 
 export interface HeroSlide {
   image: string;
@@ -43,7 +44,7 @@ export default function HeroCarousel({
       {slides.map((slide, i) => (
         <div key={slide.image} className={`hero-slide${i === index ? ' on' : ''}`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="hero-img" src={slide.image} alt={slide.title ?? ''} />
+          <img className="hero-img" src={mediaUrl(slide.image)} alt={slide.title ?? ''} />
           {(caption || slide.title || slide.subtitle) && (
             <div className="container hero-cap">
               {caption ? (

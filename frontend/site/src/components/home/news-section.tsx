@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Reveal from '../motion/reveal';
 import { formatNewsDate, pickLang, type PublicNews } from '../../lib/api';
 import type { Dict, Lang } from '../../lib/i18n';
+import { mediaUrl } from '@/lib/paths';
 
 export default function NewsSection({ news, lang, t }: { news: PublicNews[]; lang: Lang; t: Dict }) {
   if (news.length === 0) return null;
@@ -20,7 +21,7 @@ export default function NewsSection({ news, lang, t }: { news: PublicNews[]; lan
             <Reveal key={item.id} delay={(i % 4) + 1} className="news-card">
               <Link href={`/${lang}/news/${item.id}`}>
                 <div className="im">
-                  {item.coverUrl && <img src={item.coverUrl} alt="" />}
+                  {item.coverUrl && <img src={mediaUrl(item.coverUrl)} alt="" />}
                   <span className="date">{formatNewsDate(item.publishTime)}</span>
                 </div>
                 <div className="bd">

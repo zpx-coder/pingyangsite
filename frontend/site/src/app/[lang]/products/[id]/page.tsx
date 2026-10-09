@@ -12,6 +12,7 @@ import Reveal from '@/components/motion/reveal';
 import { getApi, pickLang, type PublicProductDetail } from '@/lib/api';
 import { dict, isLang } from '@/lib/i18n';
 import { buildMetadata } from '@/lib/seo';
+import { mediaHtml, mediaUrl } from '@/lib/paths';
 
 // 企业 Logo 缺失时的字标底色（与类目页 logo-mark 三色轮换一致）
 const MARK_COLORS = ['#336065', '#28484C', '#A9713D'];
@@ -165,7 +166,7 @@ export default async function ProductDetailPage({
               </button>
             </div>
             {/* 后台富文本（管理员受信输入，录入端校验）；段落与图片样式见 .rich-content */}
-            <div className="rich-content" dangerouslySetInnerHTML={{ __html: richHtml }} />
+            <div className="rich-content" dangerouslySetInnerHTML={{ __html: mediaHtml(richHtml) }} />
           </Reveal>
         )}
 
@@ -182,7 +183,7 @@ export default async function ProductDetailPage({
                     <div className="im">
                       {other.mainImage && (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={other.mainImage} alt="" />
+                        <img src={mediaUrl(other.mainImage)} alt="" />
                       )}
                     </div>
                     <div className="bd">

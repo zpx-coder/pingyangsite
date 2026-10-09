@@ -3,6 +3,7 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { ensureSession } from '@/stores/session';
+import { APP_BASE_PATH } from '@/utils/paths';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -82,7 +83,7 @@ const routes: RouteRecordRaw[] = [
 ];
 
 export const router = createRouter({
-  history: createWebHistory('/admin/'),
+  history: createWebHistory(`${APP_BASE_PATH}/admin/`),
   routes,
 });
 

@@ -10,6 +10,7 @@ import Reveal from '@/components/motion/reveal';
 import { getApi, pickLang, type PublicCompanyDetail } from '@/lib/api';
 import { dict, isLang } from '@/lib/i18n';
 import { buildMetadata } from '@/lib/seo';
+import { mediaHtml, mediaUrl } from '@/lib/paths';
 
 // 企业 Logo 缺失时的字标底色（与类目页 logo-mark 三色轮换一致）
 const MARK_COLORS = ['#336065', '#28484C', '#A9713D'];
@@ -89,7 +90,7 @@ export default async function CompanyDetailPage({
     <>
       <div className="page-banner" style={{ height: 210 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={cover} alt="" />
+        <img src={mediaUrl(cover)} alt="" />
         <div className="container">
           <h1 style={{ fontSize: 32 }}>{name}</h1>
         </div>
@@ -113,7 +114,7 @@ export default async function CompanyDetailPage({
           <div style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
             {company.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img className="logo-img" src={company.logoUrl} alt="" style={{ width: 88, height: 88 }} />
+              <img className="logo-img" src={mediaUrl(company.logoUrl)} alt="" style={{ width: 88, height: 88 }} />
             ) : (
               <div className="logo-mark" style={{ width: 88, height: 88, fontSize: 34, background: MARK_COLORS[company.id % MARK_COLORS.length] }}>
                 {/* 字标取品牌名首字：企业名通常带地域前缀（温州/浙江…），跳过前缀取第 3 字，与类目页一致 */}
@@ -181,7 +182,7 @@ export default async function CompanyDetailPage({
               <h2 style={{ fontSize: 26 }}>{t.company.aboutTitle}</h2>
             </div>
             {/* 后台富文本（管理员受信输入，录入端校验）；段落与图片样式见 .rich-content */}
-            <div className="rich-content" dangerouslySetInnerHTML={{ __html: intro }} />
+            <div className="rich-content" dangerouslySetInnerHTML={{ __html: mediaHtml(intro) }} />
           </Reveal>
         )}
 
@@ -196,7 +197,7 @@ export default async function CompanyDetailPage({
             <div className="honor-grid">
               {company.honorImages.map((image, i) => (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img key={`${image}-${i}`} src={image} alt={`${t.company.honorTitle} ${i + 1}`} />
+                <img key={`${image}-${i}`} src={mediaUrl(image)} alt={`${t.company.honorTitle} ${i + 1}`} />
               ))}
             </div>
           </Reveal>

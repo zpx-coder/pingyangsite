@@ -11,6 +11,7 @@ import { confirmDanger } from '@/utils/confirm';
 import { formatDateTime } from '@/utils/format';
 import StatusBadge from '@/components/StatusBadge.vue';
 import PaginationBar from '@/components/PaginationBar.vue';
+import { mediaUrl } from '@/utils/paths';
 
 const router = useRouter();
 
@@ -120,7 +121,10 @@ function isScheduled(row: NewsView): boolean {
           <tbody>
             <tr v-for="row in list" :key="row.id">
               <td>
-                <div class="thumb wide"><img v-if="row.coverUrl" :src="row.coverUrl" alt="" loading="lazy" /><span v-else>—</span></div>
+                <div class="thumb wide">
+                  <img v-if="row.coverUrl" :src="mediaUrl(row.coverUrl)" alt="" loading="lazy" />
+                  <span v-else>—</span>
+                </div>
               </td>
               <td><b>{{ row.titleZh }}</b><span v-if="row.titleEn" class="name-en">{{ row.titleEn }}</span></td>
               <td><StatusBadge kind="news" :value="row.status" /></td>

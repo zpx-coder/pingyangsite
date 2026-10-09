@@ -2,6 +2,7 @@
 import { reactive } from 'vue';
 import { getSession } from '@/api/auth';
 import { ApiError } from '@/api/http';
+import { APP_BASE_PATH } from '@/utils/paths';
 
 export const sessionState = reactive({
   /** 已登录手机号（脱敏展示用）；空串表示未登录 */
@@ -23,12 +24,13 @@ let checking: Promise<SessionCheck> | null = null;
 // ——两者后端 /session 均返回 40100，前者不该弹「会话已过期」
 const SESSION_MARKER = 'pysid_present';
 const MARKER_MAX_AGE_SECONDS = 8 * 60 * 60;
+const COOKIE_PATH = APP_BASE_PATH ? `${APP_BASE_PATH}/` : '/';
 
 function setMarker(): void {
-  document.cookie = `${SESSION_MARKER}=1; path=/; max-age=${MARKER_MAX_AGE_SECONDS}; SameSite=Lax`;
+  document.cookie = `${SESSION_MARKER}=1; path=${COOKIE_PATH}; max-age=${MARKER_MAX_AGE_SECONDS}; SameSite=Lax`;
 }
 function removeMarker(): void {
-  document.cookie = `${SESSION_MARKER}=1; path=/; max-age=0; SameSite=Lax`;
+  document.cookie = `${SESSION_MARKER}=1; path=${COOKIE_PATH}; max-age=0; SameSite=Lax`;
 }
 function hasMarker(): boolean {
   return document.cookie.split(';').some((item) => item.trim().startsWith(`${SESSION_MARKER}=`));

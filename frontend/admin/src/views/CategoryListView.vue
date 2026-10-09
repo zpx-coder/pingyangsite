@@ -19,6 +19,7 @@ import StatusBadge from '@/components/StatusBadge.vue';
 import PaginationBar from '@/components/PaginationBar.vue';
 import RadioPills from '@/components/RadioPills.vue';
 import ImageUploader from '@/components/ImageUploader.vue';
+import { mediaUrl } from '@/utils/paths';
 
 const { list, total, page, pageSize, loading, search, onPageChange } = usePagedList<CategoryView, object>({
   pageSize: 20,
@@ -195,7 +196,7 @@ function iconHue(id: number): number {
           <tbody>
             <tr v-for="row in list" :key="row.id">
               <td>
-                <div v-if="row.iconUrl" class="thumb"><img :src="row.iconUrl" alt="" loading="lazy" /></div>
+                <div v-if="row.iconUrl" class="thumb"><img :src="mediaUrl(row.iconUrl)" alt="" loading="lazy" /></div>
                 <div
                   v-else
                   class="cat-icon-ph"

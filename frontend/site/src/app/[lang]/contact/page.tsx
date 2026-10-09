@@ -7,6 +7,7 @@ import Reveal from '@/components/motion/reveal';
 import { getApi, pickLang, type ContactInfoConfig, type PageContentMap, type PublicCategory } from '@/lib/api';
 import { dict, isLang } from '@/lib/i18n';
 import { buildMetadata } from '@/lib/seo';
+import { mediaUrl } from '@/lib/paths';
 
 // 横幅与地图占位均为设计稿静态素材（方案 §4.5 素材规范，本地化存储）
 const MAP_IMAGE = '/img/map.jpg';
@@ -48,7 +49,7 @@ export default async function ContactPage({ params }: { params: Promise<{ lang: 
     <>
       <div className="page-banner">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={MAP_IMAGE} alt={t.contact.banner} />
+        <img src={mediaUrl(MAP_IMAGE)} alt={t.contact.banner} />
         <div className="container">
           <h1>{t.contact.banner}</h1>
         </div>
@@ -74,7 +75,7 @@ export default async function ContactPage({ params }: { params: Promise<{ lang: 
 
         <Reveal className="map-card">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={MAP_IMAGE} alt={t.contact.pinLabel} />
+          <img src={mediaUrl(MAP_IMAGE)} alt={t.contact.pinLabel} />
           <div className="pin">
             <div className="lb">{t.contact.pinLabel}</div>
             <div className="p" />

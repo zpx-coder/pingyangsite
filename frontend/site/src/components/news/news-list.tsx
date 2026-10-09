@@ -8,6 +8,7 @@ import Reveal from '@/components/motion/reveal';
 import { formatNewsDate, pickLang, type Paged, type PublicNews } from '@/lib/api';
 import { dict, type Lang } from '@/lib/i18n';
 import { pageNumbers } from '@/lib/pagination';
+import { browserPath, mediaUrl } from '@/lib/paths';
 
 const PAGE_SIZE = 12;
 
@@ -24,7 +25,7 @@ export default function NewsList({ lang, initial }: { lang: Lang; initial: Paged
     setLoading(true);
     setError(false);
     try {
-      const res = await fetch(`/api/v1/public/news?page=${targetPage}&pageSize=${PAGE_SIZE}`, {
+      const res = await fetch(browserPath(`/api/v1/public/news?page=${targetPage}&pageSize=${PAGE_SIZE}`), {
         cache: 'no-store',
       });
       if (!res.ok) {
@@ -72,7 +73,7 @@ export default function NewsList({ lang, initial }: { lang: Lang; initial: Paged
             <div className="im">
               {featured.coverUrl && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={featured.coverUrl} alt="" />
+                <img src={mediaUrl(featured.coverUrl)} alt="" />
               )}
             </div>
             <div className="bd">
@@ -100,7 +101,7 @@ export default function NewsList({ lang, initial }: { lang: Lang; initial: Paged
                   <div className="im">
                     {item.coverUrl && (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={item.coverUrl} alt="" />
+                      <img src={mediaUrl(item.coverUrl)} alt="" />
                     )}
                     <span className="date">{formatNewsDate(item.publishTime)}</span>
                   </div>

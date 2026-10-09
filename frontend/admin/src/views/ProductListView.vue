@@ -20,6 +20,7 @@ import { confirmDanger } from '@/utils/confirm';
 import { formatDateTime } from '@/utils/format';
 import StatusBadge from '@/components/StatusBadge.vue';
 import PaginationBar from '@/components/PaginationBar.vue';
+import { mediaUrl } from '@/utils/paths';
 
 const router = useRouter();
 
@@ -191,7 +192,12 @@ function toggleRow(row: ProductView, checked: boolean): void {
               <td>
                 <input type="checkbox" :checked="rowChecked(row)" @change="toggleRow(row, ($event.target as HTMLInputElement).checked)" />
               </td>
-              <td><div class="thumb"><img v-if="row.mainImage" :src="row.mainImage" alt="" loading="lazy" /><span v-else>—</span></div></td>
+              <td>
+                <div class="thumb">
+                  <img v-if="row.mainImage" :src="mediaUrl(row.mainImage)" alt="" loading="lazy" />
+                  <span v-else>—</span>
+                </div>
+              </td>
               <td><b>{{ row.nameZh }}</b><span v-if="row.nameEn" class="name-en">{{ row.nameEn }}</span></td>
               <td>{{ row.category?.nameZh ?? '—' }}</td>
               <td>{{ row.company?.nameZh ?? '' }}<span v-if="!row.company" style="color: var(--red)">未关联</span></td>

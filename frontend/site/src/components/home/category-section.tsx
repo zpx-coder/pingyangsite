@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Reveal from '../motion/reveal';
 import { pickLang, type PublicCategory } from '../../lib/api';
 import type { Dict, Lang } from '../../lib/i18n';
+import { mediaUrl } from '@/lib/paths';
 
 const HOME_CATEGORY_MAX = 8;
 
@@ -32,7 +33,7 @@ export default function CategorySection({
             <Reveal key={category.id} delay={(i % 4) + 1} className="cat-card">
               <Link href={`/${lang}/categories/${category.id}`} aria-label={pickLang(lang, category.nameZh, category.nameEn)}>
                 <div className="im">
-                  {category.iconUrl && <img src={category.iconUrl} alt="" />}
+                  {category.iconUrl && <img src={mediaUrl(category.iconUrl)} alt="" />}
                   <span className="no">{String(i + 1).padStart(2, '0')}</span>
                 </div>
                 <div className="bd">

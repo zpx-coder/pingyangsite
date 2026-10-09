@@ -9,6 +9,7 @@ import Reveal from '@/components/motion/reveal';
 import { getApi, pickLang, type Paged, type PublicCategory, type PublicCompany, type PublicProductCard } from '@/lib/api';
 import { dict, isLang } from '@/lib/i18n';
 import { buildMetadata } from '@/lib/seo';
+import { mediaUrl } from '@/lib/paths';
 
 const PAGE_SIZE = 12;
 
@@ -80,7 +81,7 @@ export default async function CategoryPage({
       <div className="page-banner" style={{ height: 210 }}>
         {bannerImage && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={bannerImage} alt="" />
+          <img src={mediaUrl(bannerImage)} alt="" />
         )}
         <div className="container">
           <h1 style={{ fontSize: 32 }}>

@@ -7,6 +7,7 @@ import Reveal from '@/components/motion/reveal';
 import { getApi, pickLang, type AboutPageConfig, type PageContentMap, type PublicCategory } from '@/lib/api';
 import { dict, isLang } from '@/lib/i18n';
 import { buildMetadata } from '@/lib/seo';
+import { mediaHtml, mediaUrl } from '@/lib/paths';
 
 // 封面图与横幅回退图为设计稿静态素材（方案 §4.5 素材规范，本地化存储）
 const FALLBACK_BANNER = '/img/banner1.jpg';
@@ -45,7 +46,7 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
     <>
       <div className="page-banner">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={bannerImage} alt={t.nav.about} />
+        <img src={mediaUrl(bannerImage)} alt={t.nav.about} />
         <div className="container">
           <h1>{t.nav.about}</h1>
         </div>
@@ -80,7 +81,11 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
             </div>
             <div style={{ height: '100%' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={LOCATION_IMAGE} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+              <img
+                src={mediaUrl(LOCATION_IMAGE)}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                alt=""
+              />
             </div>
           </div>
         </Reveal>
@@ -98,7 +103,7 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
         {content && (
           <Reveal className="card" style={{ marginTop: 26 }}>
             {/* 后台富文本（管理员受信输入，录入端校验）；段落与图片样式见 .rich-content */}
-            <div className="rich-content" dangerouslySetInnerHTML={{ __html: content }} />
+            <div className="rich-content" dangerouslySetInnerHTML={{ __html: mediaHtml(content) }} />
           </Reveal>
         )}
 
@@ -113,7 +118,7 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
                 <Reveal key={category.id} delay={(i % 4) + 1} className="cat-card">
                   <Link href={`/${lang}/categories/${category.id}`}>
                     <div className="im">
-                      {category.iconUrl && <img src={category.iconUrl} alt="" />}
+                      {category.iconUrl && <img src={mediaUrl(category.iconUrl)} alt="" />}
                       <span className="no">{String(i + 1).padStart(2, '0')}</span>
                     </div>
                     <div className="bd">

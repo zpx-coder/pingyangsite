@@ -12,6 +12,7 @@ import { notifyError } from '@/api/http';
 import { confirmDanger } from '@/utils/confirm';
 import StatusBadge from '@/components/StatusBadge.vue';
 import PaginationBar from '@/components/PaginationBar.vue';
+import { mediaUrl } from '@/utils/paths';
 
 const router = useRouter();
 
@@ -132,7 +133,12 @@ async function removeRow(row: CompanyView): Promise<void> {
           </thead>
           <tbody>
             <tr v-for="row in list" :key="row.id">
-              <td><div class="thumb"><img v-if="row.logoUrl" :src="row.logoUrl" alt="" loading="lazy" /><span v-else>—</span></div></td>
+              <td>
+                <div class="thumb">
+                  <img v-if="row.logoUrl" :src="mediaUrl(row.logoUrl)" alt="" loading="lazy" />
+                  <span v-else>—</span>
+                </div>
+              </td>
               <td><b>{{ row.nameZh }}</b><span v-if="row.nameEn" class="name-en">{{ row.nameEn }}</span></td>
               <td>
                 <span v-for="c in row.categories" :key="c.id" class="cat-tag">{{ c.nameZh }}</span>

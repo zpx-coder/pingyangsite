@@ -4,6 +4,7 @@
 import Link from 'next/link';
 import { dict, type Lang } from '@/lib/i18n';
 import { pickLang, type PageContentMap, type PublicCategory } from '@/lib/api';
+import { mediaUrl } from '@/lib/paths';
 
 export default function SiteFooter({
   lang,
@@ -41,7 +42,7 @@ export default function SiteFooter({
             {/* 深色背景以白色圆角底衬承载 logo（方案 §4.2） */}
             <span className="logo-tile">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="logo" src="/img/logo.jpg" alt={t.logoAlt} />
+              <img className="logo" src={mediaUrl('/img/logo.jpg')} alt={t.logoAlt} />
             </span>
             <p className="desc">{t.footer.desc}</p>
           </div>

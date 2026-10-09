@@ -9,6 +9,7 @@ import Reveal from '@/components/motion/reveal';
 import { formatNewsDate, getApi, pickLang, type PublicNewsDetail } from '@/lib/api';
 import { dict, isLang } from '@/lib/i18n';
 import { buildMetadata } from '@/lib/seo';
+import { mediaHtml } from '@/lib/paths';
 
 // cache 保证 generateMetadata 与页面渲染同一请求内只取一次详情
 const getNews = cache((id: number) => getApi<PublicNewsDetail>(`/api/v1/public/news/${id}`));
@@ -77,7 +78,7 @@ export default async function NewsDetailPage({
 
       <Reveal className="article-body">
         {/* 后台富文本（管理员受信输入，录入端校验）；段落与图片样式见 .rich-content */}
-        <div className="rich-content" dangerouslySetInnerHTML={{ __html: content }} />
+        <div className="rich-content" dangerouslySetInnerHTML={{ __html: mediaHtml(content) }} />
       </Reveal>
 
       {/* 上一篇/下一篇（列表序邻位，两端为空置灰）+ 返回列表（PRD §6.7） */}

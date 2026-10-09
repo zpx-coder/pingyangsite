@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import LanguageSwitcher from './language-switcher';
 import { dict, type Lang } from '@/lib/i18n';
 import { pickLang, type PublicCategory } from '@/lib/api';
+import { mediaUrl } from '@/lib/paths';
 
 // 外贸对接会外链（v1.2 PRD：第三方静态页，中英态同一链接，新标签页打开）
 const MATCHMAKING_URL = 'https://www.iyicaibao.com/ycb_static/pingyang/index.html';
@@ -57,7 +58,7 @@ export default function SiteHeader({
           <Link className="brand" href={base} aria-label="home">
             {/* 白底位置直接展示官方 logo（方案 §4.2：整体使用不可裁剪） */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="logo" src="/img/logo.jpg" alt={t.logoAlt} />
+            <img className="logo" src={mediaUrl('/img/logo.jpg')} alt={t.logoAlt} />
             <div>
               <div className="t1">
                 {lang === 'zh-CN' ? (
