@@ -100,6 +100,11 @@ describe('CreateCompanyDto', () => {
     expect(await errorMessages({ ...VALID, honorImages: ['abc'] })).toContain(
       '荣誉资质图片地址格式不正确',
     );
+    // 演示数据荣誉图使用站内相对路径（/img/honor-cert.jpg），须通过校验（缺陷修复）
+    expect(await errorMessages({ ...VALID, honorImages: ['/img/honor-cert.jpg'] })).toEqual([]);
+    expect(await errorMessages({ ...VALID, honorImages: ['example.com/a.jpg'] })).toContain(
+      '荣誉资质图片地址格式不正确',
+    );
   });
 
   it('排序值与状态', async () => {

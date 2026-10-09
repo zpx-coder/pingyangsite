@@ -53,6 +53,11 @@ describe('UpdateCompanyDto', () => {
     const urls = Array.from({ length: 11 }, (_, i) => `https://a.example.com/${i}.jpg`);
     expect(await errorMessages({ honorImages: urls })).toContain('荣誉资质最多 10 张');
     expect(await errorMessages({ honorImages: ['abc'] })).toContain('荣誉资质图片地址格式不正确');
+    // 演示数据荣誉图使用站内相对路径（/img/honor-cert.jpg），须通过校验（缺陷修复）
+    expect(await errorMessages({ honorImages: ['/img/honor-cert.jpg'] })).toEqual([]);
+    expect(await errorMessages({ honorImages: ['example.com/a.jpg'] })).toContain(
+      '荣誉资质图片地址格式不正确',
+    );
   });
 
   it('排序值与状态', async () => {
