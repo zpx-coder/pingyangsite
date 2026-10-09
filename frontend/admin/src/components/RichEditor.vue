@@ -45,6 +45,9 @@ watch(model, (value) => {
   editorValue.value = wrapTopLevelImages(value);
 }, { immediate: true });
 
+// wangEditor 5.1.23 起图片/视频菜单拆分为两个按钮：
+//   insertImage / insertVideo = 网络地址弹窗；uploadImage / uploadVideo = 本地上传
+// （缺陷修复：此前只挂 insertImage，工具栏无本地上传入口）
 const toolbarKeys = [
   'headerSelect',
   '|',
@@ -57,7 +60,9 @@ const toolbarKeys = [
   '|',
   'insertLink',
   'insertImage',
+  'uploadImage',
   'insertVideo',
+  'uploadVideo',
   '|',
   'undo',
   'redo',
@@ -86,7 +91,7 @@ const editorConfig = {
         }
       },
     },
-    insertVideo: {
+    uploadVideo: {
       // 视频同样入库，插入视频地址；封面由视频帧/运营图承担（PRD：视频封面由运营单独上传）
       async customUpload(file: File, insertFn: (url: string) => void) {
         const form = new FormData();
