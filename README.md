@@ -31,6 +31,10 @@ MySQL 连接外部服务器。本机生成 amd64 镜像和 tar，服务器加载
 根 `.dockerignore` 排除密钥与构建产物。后续可按第 7 节重新构建；
 服务器仍需由操作者上传、加载并重建容器。
 
+已合并 `origin/develop` 的 `1fb6eef`，同事的新功能与 `/pingyang` 适配均保留。
+合并代码已用本地 `pingyangsite:merged-amd64` 验证；原生产镜像标签和现有 tar
+尚未替换，不包含本次同事更新。发布新版本前按第 7 节构建，再导出、上传。
+
 新对话可直接粘贴：
 
 > 请先阅读仓库根目录 README.md。采用单容器、外部 MySQL，公网入口 /pingyang/。

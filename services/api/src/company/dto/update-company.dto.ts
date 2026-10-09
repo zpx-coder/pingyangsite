@@ -8,11 +8,13 @@ import {
   IsInt,
   IsOptional,
   IsUrl,
+  Matches,
   Max,
   MaxLength,
   Min,
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IMAGE_URL_PATTERN } from '../../common/image-url.constants';
 
 export class UpdateCompanyDto {
   @ApiPropertyOptional({ description: '企业中文名称', example: '平阳县某某宠物用品有限公司' })
@@ -107,14 +109,14 @@ export class UpdateCompanyDto {
   introEn?: string;
 
   @ApiPropertyOptional({
-    description: '荣誉资质图片地址数组（最多 10 张）',
+    description: '荣誉资质图片地址数组（最多 10 张，http/https 绝对地址或站内相对路径，如 /img/honor-cert.jpg）',
     type: [String],
     example: ['https://cdn.example.com/honor-1.png'],
   })
   @IsOptional()
   @IsArray({ message: '荣誉资质格式不正确' })
   @ArrayMaxSize(10, { message: '荣誉资质最多 10 张' })
-  @IsUrl({ require_protocol: true }, { each: true, message: '荣誉资质图片地址格式不正确' })
+  @Matches(IMAGE_URL_PATTERN, { each: true, message: '荣誉资质图片地址格式不正确' })
   honorImages?: string[];
 
   @ApiPropertyOptional({ description: '排序值（升序，数值越小越靠前）', example: 1 })

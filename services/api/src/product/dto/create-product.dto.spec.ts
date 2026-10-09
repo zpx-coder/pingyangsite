@@ -45,9 +45,17 @@ describe('CreateProductDto', () => {
     expect(await errorMessages({ ...VALID, companyId: 0 })).toContain('关联企业 ID 无效');
   });
 
-  it('主图必填、须为 URL 且不超过 255 字符', async () => {
+  it('主图必填、须为绝对 URL 或站内相对路径且不超过 255 字符', async () => {
     expect(await errorMessages({ ...VALID, mainImage: '' })).toContain('请上传产品主图');
     expect(await errorMessages({ ...VALID, mainImage: 'abc' })).toContain('主图地址格式不正确');
+    // 演示数据主图使用站内相对路径（/img/*.jpg），须通过校验（缺陷修复）
+    expect(await errorMessages({ ...VALID, mainImage: '/img/p1.jpg' })).toEqual([]);
+    expect(await errorMessages({ ...VALID, mainImage: 'example.com/a.jpg' })).toContain(
+      '主图地址格式不正确',
+    );
+    expect(await errorMessages({ ...VALID, mainImage: '//cdn.example.com/a.jpg' })).toContain(
+      '主图地址格式不正确',
+    );
     expect(await errorMessages({ ...VALID, mainImage: `https://${'x'.repeat(250)}.com` })).toContain(
       '主图地址过长',
     );
@@ -58,6 +66,11 @@ describe('CreateProductDto', () => {
     expect(await errorMessages({ ...VALID, images: 'x' })).toContain('产品图集格式不正确');
     expect(await errorMessages({ ...VALID, images: urls })).toContain('产品图集最多 10 张');
     expect(await errorMessages({ ...VALID, images: ['abc'] })).toContain(
+      '产品图集图片地址格式不正确',
+    );
+    // 演示数据图集使用站内相对路径，须通过校验；裸域名与协议相对地址仍拒绝
+    expect(await errorMessages({ ...VALID, images: ['/img/p1.jpg'] })).toEqual([]);
+    expect(await errorMessages({ ...VALID, images: ['example.com/a.jpg'] })).toContain(
       '产品图集图片地址格式不正确',
     );
   });

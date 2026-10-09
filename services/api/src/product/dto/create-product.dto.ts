@@ -7,11 +7,12 @@ import {
   IsInt,
   IsNotEmpty,
   IsOptional,
-  IsUrl,
+  Matches,
   MaxLength,
   Min,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IMAGE_URL_PATTERN } from '../../common/image-url.constants';
 
 export class CreateProductDto {
   @ApiProperty({ description: '产品中文名称', example: '不锈钢宠物碗' })
@@ -34,21 +35,24 @@ export class CreateProductDto {
   @Min(1, { message: '关联企业 ID 无效' })
   companyId?: number;
 
-  @ApiProperty({ description: '产品主图地址', example: 'https://cdn.example.com/pet-bowl.png' })
+  @ApiProperty({
+    description: '产品主图地址（http/https 绝对地址或站内相对路径，如 /img/p1.jpg）',
+    example: 'https://cdn.example.com/pet-bowl.png',
+  })
   @IsNotEmpty({ message: '请上传产品主图' })
-  @IsUrl({ require_protocol: true }, { message: '主图地址格式不正确' })
+  @Matches(IMAGE_URL_PATTERN, { message: '主图地址格式不正确' })
   @MaxLength(255, { message: '主图地址过长' })
   mainImage!: string;
 
   @ApiPropertyOptional({
-    description: '产品图集图片地址数组（最多 10 张）',
+    description: '产品图集图片地址数组（最多 10 张，http/https 绝对地址或站内相对路径）',
     type: [String],
     example: ['https://cdn.example.com/pet-bowl-1.png'],
   })
   @IsOptional()
   @IsArray({ message: '产品图集格式不正确' })
   @ArrayMaxSize(10, { message: '产品图集最多 10 张' })
-  @IsUrl({ require_protocol: true }, { each: true, message: '产品图集图片地址格式不正确' })
+  @Matches(IMAGE_URL_PATTERN, { each: true, message: '产品图集图片地址格式不正确' })
   images?: string[];
 
   @ApiPropertyOptional({ description: '产品中文简介', example: '304 不锈钢材质，防滑底座设计' })

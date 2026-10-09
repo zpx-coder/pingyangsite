@@ -9,8 +9,11 @@ import { dict, isLang } from '@/lib/i18n';
 import { buildMetadata } from '@/lib/seo';
 import { mediaUrl } from '@/lib/paths';
 
-// 横幅与地图占位均为设计稿静态素材（方案 §4.5 素材规范，本地化存储）
-const MAP_IMAGE = '/img/map.jpg';
+// 横幅与地图均为本地静态素材（方案 §4.5 素材规范，本地化存储）：
+// 2026-10-09 应负责人要求——横幅由地图占位图更换为温州海岸实拍；
+// 地图由占位图更换为平阳区域地图（Bing 瓦片 z13 拼接，中心=平阳县政府，钉位 50%/46% 对齐）
+const BANNER_IMAGE = '/img/loc-wenzhou.jpg';
+const MAP_IMAGE = '/img/map-pingyang.jpg';
 
 // 联系我们页 TDK/hreflang（任务 2.10）
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
@@ -49,7 +52,7 @@ export default async function ContactPage({ params }: { params: Promise<{ lang: 
     <>
       <div className="page-banner">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={mediaUrl(MAP_IMAGE)} alt={t.contact.banner} />
+        <img src={mediaUrl(BANNER_IMAGE)} alt={t.contact.banner} />
         <div className="container">
           <h1>{t.contact.banner}</h1>
         </div>

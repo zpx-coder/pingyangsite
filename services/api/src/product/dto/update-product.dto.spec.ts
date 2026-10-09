@@ -44,9 +44,16 @@ describe('UpdateProductDto', () => {
 
   it('主图与图集校验', async () => {
     expect(await errorMessages({ mainImage: 'abc' })).toContain('主图地址格式不正确');
+    // 演示数据主图使用站内相对路径（/img/*.jpg），须通过校验（缺陷修复）
+    expect(await errorMessages({ mainImage: '/img/p1.jpg' })).toEqual([]);
+    expect(await errorMessages({ mainImage: 'example.com/a.jpg' })).toContain('主图地址格式不正确');
     const urls = Array.from({ length: 11 }, (_, i) => `https://a.example.com/${i}.jpg`);
     expect(await errorMessages({ images: urls })).toContain('产品图集最多 10 张');
     expect(await errorMessages({ images: ['abc'] })).toContain('产品图集图片地址格式不正确');
+    expect(await errorMessages({ images: ['/img/p1.jpg'] })).toEqual([]);
+    expect(await errorMessages({ images: ['//cdn.example.com/a.jpg'] })).toContain(
+      '产品图集图片地址格式不正确',
+    );
   });
 
   it('排序值与状态（0/1/2）', async () => {

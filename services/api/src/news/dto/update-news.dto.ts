@@ -1,6 +1,7 @@
 // 新闻编辑入参：全部可选，仅更新传入字段
-import { IsBoolean, IsDateString, IsIn, IsOptional, IsUrl, MaxLength } from 'class-validator';
+import { IsBoolean, IsDateString, IsIn, IsOptional, Matches, MaxLength } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IMAGE_URL_PATTERN } from '../../common/image-url.constants';
 
 export class UpdateNewsDto {
   @ApiPropertyOptional({ description: '新闻标题（中文）', example: '平阳产业带企业亮相广交会' })
@@ -13,9 +14,12 @@ export class UpdateNewsDto {
   @MaxLength(200, { message: '英文标题不能超过 200 字符' })
   titleEn?: string;
 
-  @ApiPropertyOptional({ description: '封面图地址', example: 'https://example.com/news-cover.jpg' })
+  @ApiPropertyOptional({
+    description: '封面图地址（http/https 绝对地址或站内相对路径，如 /img/n1.jpg）',
+    example: 'https://example.com/news-cover.jpg',
+  })
   @IsOptional()
-  @IsUrl({ require_protocol: true }, { message: '封面图地址格式不正确' })
+  @Matches(IMAGE_URL_PATTERN, { message: '封面图地址格式不正确' })
   @MaxLength(255, { message: '封面图地址过长' })
   coverUrl?: string;
 
