@@ -360,9 +360,10 @@ sudo docker restart pingyangsite  # 仅重启当前版本
 
 ## Git 协作
 
-`develop2.0` 作为后续集成分支，包含同事功能和已验证的 `/pingyang` 部署适配。
+`develop2.0` 为**部署线**（2026-10-12 负责人确认）：云上部署与后续开发均以它为准，
 新功能分支从最新 `origin/develop2.0` 创建，完成后通过 PR 合回 `develop2.0`。
-`feature/pingyang-subpath-deploy` 保留本次适配版本；原 `develop` 保留历史。
+`develop` 已同步至 `develop2.0`（2026-10-12 快速前进），保留为回退镜像；
+`feature/pingyang-subpath-deploy` 保留本次 `/pingyang` 适配版本。
 
 ## 项目文档
 
