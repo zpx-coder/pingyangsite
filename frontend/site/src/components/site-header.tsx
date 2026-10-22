@@ -11,6 +11,7 @@ import { mediaUrl } from '@/lib/paths';
 
 // 外贸对接会外链（v1.2 PRD：第三方静态页，中英态同一链接，新标签页打开）
 const MATCHMAKING_URL = 'https://www.iyicaibao.com/ycb_static/pingyang/index.html';
+const NAV_CATEGORY_MAX = 30;
 
 export default function SiteHeader({
   lang,
@@ -97,7 +98,7 @@ export default function SiteHeader({
                 <span className={`nav-item ${current === item.key ? 'on' : ''}`}>{item.label}</span>
                 <div className="drop-panel">
                   {categories.length > 0 ? (
-                    categories.slice(0, 8).map((category, i) => (
+                    categories.slice(0, NAV_CATEGORY_MAX).map((category, i) => (
                       <Link key={category.id} href={`${base}/categories/${category.id}`}>
                         <i>{String(i + 1).padStart(2, '0')}</i>
                         <div>

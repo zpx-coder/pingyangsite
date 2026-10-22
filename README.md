@@ -1,11 +1,16 @@
 # 平阳产业带官网：单容器 Docker 部署
 
+日常发布请优先使用 [Docker 部署与回退手册](docs/Docker部署与回退手册.md)（2026-10-19）：包含本地打包与启动、生产更新、图片卷复用和快速回退。下文中的 2026-10-09 状态、旧库名和容器名保留为历史记录。
+
 一个容器运行 Next.js 官网、Vue 后台静态文件、NestJS API、Redis 和 Nginx；
 MySQL 连接外部服务器。本机生成 amd64 镜像和 tar，服务器加载后运行，
 公网 Tengine 将现有域名的 `/pingyang/` 转到容器。
 
 本文统一替代原 `local-docker/README.md`、`server-docker/README.md`。
 数据库密码、会话密钥、管理员密码只填写在私有环境文件中。
+
+本次修改、合并及排查记录见
+[20261009 Docker 部署经验落地](<docs/20261009pingyangsite_docker 部署经验落地.md>)。
 
 ## 0. 当前状态与新对话交接
 
@@ -198,30 +203,31 @@ sudo docker inspect pingyangsite \
 
 本次使用 `pingyangsite-uploads` → `/app/services/api/uploads`、
 `pingyangsite-redis` → `/data/redis`。如果实际挂载不同，复用实际挂载。
-已有容器先停止并删除；首次部署跳过这两行：
+已有容器先停止并保留，释放原端口；首次部署跳过这一行：
 
 ```bash
 sudo docker stop pingyangsite
-sudo docker rm pingyangsite
 ```
 
-创建新容器：
+创建新容器。`pingyangsite-new` 必须是未占用的名称；
+后续更新替换为实际旧名称和新的未占用名称：
 
 ```bash
-sudo docker run -d --name pingyangsite \
+sudo docker run -d --name pingyangsite-new \
   --restart unless-stopped \
   -p 10.10.2.21:18080:8080 \
   --env-file "$PWD/.env.production" \
   -v pingyangsite-uploads:/app/services/api/uploads \
   -v pingyangsite-redis:/data/redis \
   pingyangsite:prod-amd64
-sudo docker ps --filter name=pingyangsite
-sudo docker logs --tail 100 pingyangsite
+sudo docker ps -a --filter name=pingyangsite
+sudo docker logs --tail 100 pingyangsite-new
 curl -i http://10.10.2.21:18080/pingyang/api/v1/health
 ```
 
 健康接口应返回 JSON、HTTP `200`。`health: starting` 是启动阶段，
 稍后应变为 `healthy`。错误时先查看容器日志。
+旧容器停止后，新容器可用相同端口；不要同时运行两个容器写入同一 Redis 卷。
 
 ## 5. Tengine 服务器：配置 `/pingyang/` 代理
 
@@ -349,13 +355,19 @@ sudo docker run --rm --entrypoint sh pingyangsite:prod-amd64 -lc \
 ## 9. 常用操作与回退
 
 ```bash
-sudo docker logs --tail 100 pingyangsite
-sudo docker ps --filter name=pingyangsite
-sudo docker restart pingyangsite  # 仅重启当前版本
+sudo docker logs --tail 100 pingyangsite-new
+sudo docker ps -a --filter name=pingyangsite
+sudo docker restart pingyangsite-new  # 仅重启当前版本
 ```
 
-回退：停止并删除新容器，复用第 4 节 `docker run` 的环境文件、端口与数据卷，
-将最后的镜像名改为 `pingyangsite:before-update`。不要删除数据卷。
+回退：停止新容器，再启动保留的旧容器。不要删除数据卷。
+
+```bash
+sudo docker stop pingyangsite-new
+sudo docker start pingyangsite
+```
+
+回退不会撤销外部数据库和共享卷中的业务数据变更。
 若备份的是最初不支持 `/pingyang` 的旧镜像，只能恢复原根路径服务。
 
 ## Git 协作

@@ -1,4 +1,4 @@
-// 首页特色产业类目区（PRD §6.1）：仅上架类目、按排序值升序（后端已排），最多 8 个；
+// 首页特色产业类目区：仅上架类目、按排序值升序（后端已排），最多 30 个；
 // 卡片点击进入类目聚合页 /categories/[id]。
 import Link from 'next/link';
 import Reveal from '../motion/reveal';
@@ -6,7 +6,7 @@ import { pickLang, type PublicCategory } from '../../lib/api';
 import type { Dict, Lang } from '../../lib/i18n';
 import { mediaUrl } from '@/lib/paths';
 
-const HOME_CATEGORY_MAX = 8;
+const HOME_CATEGORY_MAX = 30;
 
 export default function CategorySection({
   categories,

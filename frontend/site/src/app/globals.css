@@ -314,6 +314,9 @@ a {
   transform: translateX(-50%) translateY(8px);
   background: #fff;
   width: 660px;
+  max-height: min(70vh, 600px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border-radius: 4px;
   box-shadow: var(--shadow-lg);
   padding: 18px;
@@ -952,6 +955,12 @@ a {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 26px;
+}
+#sec-cat .cat-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+#sec-cat .cat-card .bd h3 {
+  flex-wrap: wrap;
 }
 .cat-card {
   background: #fff;
@@ -1621,7 +1630,8 @@ a {
     grid-template-columns: 1fr 1fr;
     gap: 30px 44px;
   }
-  .cat-grid {
+  .cat-grid,
+  #sec-cat .cat-grid {
     grid-template-columns: 1fr 1fr;
   }
   .prod-grid {
