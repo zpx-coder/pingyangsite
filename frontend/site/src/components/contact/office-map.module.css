@@ -1,0 +1,37 @@
+.pin {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+
+.label {
+  background: rgba(31, 58, 61, 0.92);
+  color: #fff;
+  font-size: 12.5px;
+  padding: 5px 16px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  letter-spacing: 1px;
+}
+
+.marker {
+  display: block;
+  width: 34px;
+  height: 44px;
+  color: var(--deep);
+  filter: drop-shadow(0 6px 8px rgba(31, 58, 61, 0.4));
+}
+
+.credit {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.85);
+  color: #555;
+  font-size: 10px;
+}
