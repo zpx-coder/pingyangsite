@@ -8,8 +8,8 @@ import { dict, isLang } from '@/lib/i18n';
 import { buildMetadata } from '@/lib/seo';
 import { mediaUrl } from '@/lib/paths';
 
-// 横幅回退图为设计稿静态素材（方案 §4.5 素材规范，本地化存储）
-const NEWS_BANNER = '/img/n4.jpg';
+// 沿海产业园航拍图，呼应平阳产业动态主题。
+const NEWS_BANNER = '/img/loc-pingyang.jpg';
 
 // 新闻列表页 TDK/hreflang（任务 2.10）
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
@@ -32,7 +32,7 @@ export default async function NewsPage({ params }: { params: Promise<{ lang: str
     <>
       <div className="page-banner" style={{ height: 242 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={mediaUrl(NEWS_BANNER)} alt="" />
+        <img src={mediaUrl(NEWS_BANNER)} alt="" style={{ objectPosition: 'center 70%' }} />
         <div className="container">
           <h1>{t.news.banner}</h1>
         </div>

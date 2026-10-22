@@ -177,7 +177,7 @@ export const dict = {
       cardAddress: '办公地址',
       hoursLabel: '工作时间',
       guide: '建议访客通过产品详情页发送询盘，我们将在 1–2 个工作日内回复。',
-      pinLabel: '平阳产业带服务中心',
+      pinLabel: '平阳大厦',
       inquiryBtn: '在线询盘',
     },
     seo: {
@@ -359,7 +359,7 @@ export const dict = {
       cardAddress: 'Address',
       hoursLabel: 'Business Hours',
       guide: 'To send an inquiry, please use the inquiry form on any product detail page. We will reply within 1–2 business days.',
-      pinLabel: 'Pingyang Industrial Belt Service Center',
+      pinLabel: 'Pingyang Building',
       inquiryBtn: 'Send Inquiry',
     },
     seo: {
